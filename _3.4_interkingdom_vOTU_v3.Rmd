@@ -49,14 +49,12 @@ library(cowplot)
 
 ```{r Mapping stats, viral accumulation curves, and richness calculations per method}
 
-setwd('/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/')
-
 ### Calculate species accumulation curve, richness and shannon's H (a helpful guide: https://kembellab.ca/r-workshop/biodivR/SK_Biodiversity_R.html , and https://rpubs.com/an-bui/vegan-cheat-sheet)
 
 #Before going into richness and others, going to just really quickly plot out the read mapping statistics that i have.
 
 # Read in the data
-mapping_stats = read.delim("/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/data_stream_comparisons/read_mapping_statistics.csv", header = TRUE, sep=",")
+mapping_stats = read.delim("read_mapping_statistics.csv", header = TRUE, sep=",")
 
 # Reorder the factor levels
 mapping_stats$Type = factor(mapping_stats$Type, levels = c("DNA Virome", "EukFloat", "Bacterial", "RNA Virome", "BulkMetaT", "PolyA"))
@@ -131,17 +129,17 @@ boxplot_normalized_moist = ggplot(mapping_stats, aes(x = Type, y = ReadsNormaliz
 mappingstats_plots_moist = grid.arrange(boxplot_readsused_moist, boxplot_mapping_moist, boxplot_normalized_moist, ncol = 3)
 
 #For the richness, i made up some python code to take in the clusters output from the checkV and make a proper OTU-like table. I'm going to read that output OTU table now. This is better than just mapping either metaT or metaG because we have true counts data for each vOTU and whether it was or wasn't present in a sample!
-mg_bacterial = read.delim("/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/data_stream_comparisons/viral_accumulation_curves/otu_table_filtered_reordered_DNA_bacteria_871.csv", header = T, sep=",", row.names = 1)
+mg_bacterial = read.delim("otu_table_filtered_reordered_DNA_bacteria_871.csv", header = T, sep=",", row.names = 1)
 
-mg_eukfloat = read.delim("/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/data_stream_comparisons/viral_accumulation_curves/otu_table_filtered_reordered_DNA_EukFloat_3757.csv", header = T, sep=",", row.names = 1)
+mg_eukfloat = read.delim("otu_table_filtered_reordered_DNA_EukFloat_3757.csv", header = T, sep=",", row.names = 1)
 
-mg_virome = read.delim("/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/data_stream_comparisons/viral_accumulation_curves/otu_table_filtered_reordered_DNA_virome_14124.csv", header = T, sep=",", row.names = 1)
+mg_virome = read.delim("otu_table_filtered_reordered_DNA_virome_14124.csv", header = T, sep=",", row.names = 1)
 
-mt_bulk = read.delim("/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/data_stream_comparisons/viral_accumulation_curves/otu_table_filtered_reordered_RNA_bulkMetaT_4035.csv", header = T, sep=",", row.names = 1)
+mt_bulk = read.delim("otu_table_filtered_reordered_RNA_bulkMetaT_4035.csv", header = T, sep=",", row.names = 1)
 
-mt_virome = read.delim("/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/data_stream_comparisons/viral_accumulation_curves/otu_table_filtered_reordered_RNA_virome_3892.csv", header = T, sep=",", row.names = 1)
+mt_virome = read.delim("otu_table_filtered_reordered_RNA_virome_3892.csv", header = T, sep=",", row.names = 1)
 
-mt_polya = read.delim("/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/data_stream_comparisons/viral_accumulation_curves/otu_table_filtered_reordered_RNA_polyA_375.csv", header = T, sep=",", row.names = 1)
+mt_polya = read.delim("otu_table_filtered_reordered_RNA_polyA_375.csv", header = T, sep=",", row.names = 1)
 
 #Now I want to make accum curves for each of these individually, and then plot all of them in the same plot as well.
 
@@ -216,20 +214,20 @@ text(max(accumcurve_mt_polya$sites), max(accumcurve_mt_polya$richness), labels =
 
 #Now i want to make the richness / counts of each vOTU across each dataset. Using the geaParser, i'm able to discriminate between reads mapped to coding / template strand and those mapping to non-coding / expressed strand of the RNA seq data. I now have full vOTU tables that represent "counts" of each vOTU per sample per data method. Reading these in.
 
-mg_bacterial_counts = read.delim("/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/data_stream_comparisons/viral_richness/1xdepth_75cov_filtered_coverM_counts_DNA_Bacterial_861.txt", header = T, sep="\t", row.names = 1)
+mg_bacterial_counts = read.delim("1xdepth_75cov_filtered_coverM_counts_DNA_Bacterial_861.txt", header = T, sep="\t", row.names = 1)
 
-mg_eukfloat_counts = read.delim("/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/data_stream_comparisons/viral_richness/1xdepth_75cov_filtered_coverM_counts_DNA_EukFloat_3612.txt", header = T, sep="\t", row.names = 1)
+mg_eukfloat_counts = read.delim("1xdepth_75cov_filtered_coverM_counts_DNA_EukFloat_3612.txt", header = T, sep="\t", row.names = 1)
 
-mg_virome_counts = read.delim("/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/data_stream_comparisons/viral_richness/1xdepth_75cov_filtered_coverM_counts_DNA_Virome_13735.txt", header = T, sep="\t", row.names = 1)
+mg_virome_counts = read.delim("1xdepth_75cov_filtered_coverM_counts_DNA_Virome_13735.txt", header = T, sep="\t", row.names = 1)
 
 mg_virome_counts = mg_virome_counts %>%
   select(-c(SM1001_MG_virome, SM1002_MG_virome)) #these two samples are pretty bad outliers because they did not get much viruses. pulling them out.
 
-mt_bulk_counts = read.delim("/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/data_stream_comparisons/viral_richness/vOTU_output_abundance_counts_parsed_RNA_bulkMetaT_3862.tsv", header = T, sep="\t", row.names = 1)
+mt_bulk_counts = read.delim("vOTU_output_abundance_counts_parsed_RNA_bulkMetaT_3862.tsv", header = T, sep="\t", row.names = 1)
 
-mt_virome_counts = read.delim("/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/data_stream_comparisons/viral_richness/vOTU_output_abundance_counts_parsed_RNA_Virome_3787.tsv", header = T, sep="\t", row.names = 1)
+mt_virome_counts = read.delim("vOTU_output_abundance_counts_parsed_RNA_Virome_3787.tsv", header = T, sep="\t", row.names = 1)
 
-mt_polya_counts = read.delim("/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/data_stream_comparisons/viral_richness/vOTU_output_abundance_counts_parsed_RNA_PolyA_372.tsv", header = T, sep="\t", row.names = 1)
+mt_polya_counts = read.delim("vOTU_output_abundance_counts_parsed_RNA_PolyA_372.tsv", header = T, sep="\t", row.names = 1)
 
 # Define a function to calculate richness, diversity, and evenness
 calculate_metrics = function(otu_table, method_name) {
@@ -417,7 +415,7 @@ colnames(mt_virome_counts_rel) = sub("^(SM10\\d+).*", "\\1", colnames(mt_virome_
 colnames(mt_polya_counts_rel) = sub("^(SM10\\d+).*", "\\1", colnames(mt_polya_counts_rel))
 
 #Read in the metadata for the samples. 
-sample_metadata = read.csv("/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/supplementary_tables/TableSX_sample_metadata.csv")
+sample_metadata = read.csv("TableSX_sample_metadata.csv")
 
 mg_bacterial_counts_rel_long = mg_bacterial_counts_rel %>%
   rownames_to_column(var="genome_id") %>%
@@ -434,7 +432,7 @@ mg_bacterial_summary = mg_bacterial_counts_rel_long %>%
 ```{r Upset plots and quality comparisons per data stream}
 #For this otu table, i re-clustered all 27k vOTUs from the Single assemblies that went into the figures above.
 
-upset_otu_table = read.csv(file="/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/data_stream_comparisons/23117_otu_table_filtered_reordered_forUpsets.csv", header=T, sep=',', row.names = 1)
+upset_otu_table = read.csv(file="23117_otu_table_filtered_reordered_forUpsets.csv", header=T, sep=',', row.names = 1)
 
 #Ok so now I am really interested in trying to find the overlap of these vOTUs across the samples (i.e., how many are unique per data type / redundant). Going to just aggregate all of the vOTUs per sample-type first. Note again: This is not including the co-assembly unique vOTUs. Those i will just implement into the ecology portion of the paper.
 
@@ -550,7 +548,7 @@ upset(
 
 ##########################################################
 
-datastream_metadat = read.csv(file="/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/data_stream_comparisons/vOTUs_per_data_stream_stats.csv", header=T, sep=',')
+datastream_metadat = read.csv(file="vOTUs_per_data_stream_stats.csv", header=T, sep=',')
 
 quality_table = datastream_metadat %>%
   select(-c(2, 4:7, 11:17, 21))
@@ -678,7 +676,7 @@ density_plot2
 
 
 #Now lets make the boxplots of the yield nanograms, the soil weight utilized, and the sample sizes.
-manifest_metadat = read.table(file="/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/data_stream_comparisons/sample_metadata_dna_weight_seqs.csv", sep = ",", header=T)
+manifest_metadat = read.table(file="sample_metadata_dna_weight_seqs.csv", sep = ",", header=T)
 
 # Reorder the factor levels for the specified columns
 manifest_metadat$data_stream = factor(manifest_metadat$data_stream, levels = c("DNA Virome", "DNA Fungal", "DNA Bacterial", "RNA Virome", "RNA Bulk", "RNA PolyA"))
@@ -756,7 +754,7 @@ combined_plot
 
 #ONe last thing, lets make an nmds with the upset plot clustering data.
 
-upset_otu_table = read.csv(file="/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/data_stream_comparisons/23117_otu_table_filtered_reordered_forUpsets_nozero.csv", header=T, sep=',', row.names = 1)
+upset_otu_table = read.csv(file="23117_otu_table_filtered_reordered_forUpsets_nozero.csv", header=T, sep=',', row.names = 1)
 
 upset_otu_table_new = upset_otu_table + 1  # Adding 1 to avoid log(0) issue
 upset_otu_table_log = log(upset_otu_table_new)
@@ -869,7 +867,7 @@ rm(list=setdiff(ls(), variables_to_keep4)) #clean out the environment - keeping 
 #Now we're going to start working with the fully de-replicated database across all data methods. I mapped these three ways. 1. DNA vOTUs to bulk metaT (dna expression) 2. DNA vOTUs to dna virome (dna abundance) 3. RNA vOTUs to bulk metaT (rna abundance and expression). The latter file (3) i then used geaParser to determine if reads mapped to template strand (abundance) or non-template strand (expression). These are only ssRNA + or - viruses so these should be accurate. I did get a handful of clobbers that said certain vOTUs were expressed but not abundant - i removed those small fraction of vOTUs because i think those are more likely methodological detection issues that did not make the 1x depth and 75% coverage cutoff.
 
 #DNA abundance 
-counts_dna_abund = read.delim("/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/read_mapping_analyses/DNA_virome_DNA_vOTU/1xdepth_75cov_filtered_coverM_counts.txt", header = T, sep="\t") #coverM out
+counts_dna_abund = read.delim("1xdepth_75cov_filtered_coverM_counts.txt", header = T, sep="\t") #coverM out
 
 #Processing dna abund coverM table. This already has 1x depth cutoff and 75% coverage cutoff implemented.
 relabund_dna_abund_genome = counts_dna_abund %>%
@@ -962,7 +960,7 @@ ggplot(pielou_df, aes(x = moisture, y = pielou)) +
   scale_fill_manual(values = c("Low" = "#d46d93", "Intermediate" = "#f5cfbe", "High" = "#698934"))
 
 #DNA expression
-counts_dna_expression = read.delim("/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/read_mapping_analyses/bulk_metaT_DNA_vOTU/featureCounts_bulk_metaT_DNA_output_reverse-stranded_paired_genome.txt", header = T, sep="\t") #featureCounts out
+counts_dna_expression = read.delim("featureCounts_bulk_metaT_DNA_output_reverse-stranded_paired_genome.txt", header = T, sep="\t") #featureCounts out
 
 counts_dna_expression_noZero =  counts_dna_expression %>% 
   filter(rowSums(select(., 7:19)) != 0) %>% #Remove rows where the sum of the values in columns 7 to 19 is zero - just to make the processing quicker.
@@ -1084,7 +1082,7 @@ ggplot(expressed_otus_moisture, aes(x = Moisture, y = Expressed_OTUs)) +
 #This is the same as my overall expression patterns. This is also opposite to ruonan's trends. interesting.
 
 #RNA abundance
-counts_rna_abundance = read.delim("/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/read_mapping_analyses/bulk_metaT_RNA_vOTU/5893_genes_abundance_vOTUs.csv", header = T, sep=",") #geaParse template strand
+counts_rna_abundance = read.delim("bulk_metaT_RNA_vOTU/5893_genes_abundance_vOTUs.csv", header = T, sep=",") #geaParse template strand
 
 #Processing geaParse abund table - resolving at genome level. This already has 1x depth cutoff and 75% coverage cutoff implemented.
 relabund_rna_abundance_genome = counts_rna_abundance %>%
@@ -1223,7 +1221,7 @@ print(pairwise_wilcoxon_result)
 
 
 #RNA expression
-counts_rna_expression = read.delim("/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/read_mapping_analyses/bulk_metaT_RNA_vOTU/5893_genes_expression_vOTUs.csv", header = T, sep=",") #geaParse non-template strand
+counts_rna_expression = read.delim("5893_genes_expression_vOTUs.csv", header = T, sep=",") #geaParse non-template strand
 
 jaccard_rna_expression = counts_rna_expression %>%
   select(-length, -gene_id) %>% #remove the noise
@@ -1246,7 +1244,7 @@ jaccard_rna_expression = counts_rna_expression %>%
 variables_to_keep5 = c("datastream_metadat", "relabund_dna_abund_genome", "geTMM_dna_expression_genome", "relabund_rna_abundance_genome", "jaccard_rna_expression", "sample_metadata") #All these vOTUs are a subset of this larger one, so keeping it in so i can subset it more easily.
 rm(list=setdiff(ls(), variables_to_keep5)) #clean out the environment
 
-dnahosts = read.delim("/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/virus-host-relationships/iphop_v2/parsed_Host_prediction_to_genome_m90_duplicates_fix.csv", header = TRUE, sep=",")
+dnahosts = read.delim("parsed_Host_prediction_to_genome_m90_duplicates_fix.csv", header = TRUE, sep=",")
 
 #Group by 'Host phylum' and 'source' and count viruses
 grouped = dnahosts %>%
@@ -1280,7 +1278,7 @@ dna_hosts
 #ggsave(dna_hosts, file = "stacked_barchart_DNA.pdf")
 
 #Now lets do RNA
-rnahosts = read.delim("/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/figures/rna_virus_hosts/rna_virus_hosts.csv", header = TRUE, sep=",")
+rnahosts = read.delim("rna_virus_hosts.csv", header = TRUE, sep=",")
 
 # Remove rows where keep_remove is "remove"
 filtered_df = rnahosts[rnahosts$keep_remove != "remove", ]
@@ -1387,7 +1385,7 @@ rna_host_predictions
 #For the richness metrics, going to use the DNA and RNA vOTU abundances
 
 #Write in the metadata for the samples. 
-sample_metadata = read.csv("/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/supplementary_tables/TableSX_sample_metadata.csv")
+sample_metadata = read.csv("TableSX_sample_metadata.csv")
 
 #Let's pivot long the abundances for dna and rna and merge them with metadata. 
 relabund_dna_abund_genome_long = relabund_dna_abund_genome %>%
@@ -1472,9 +1470,9 @@ RNA_richness_season_consolidated
 
 #Now lets look at some NMDS. Loading in the NMR data that we have to overlay.
 
-nmr_chem = read.csv("/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/supplementary_tables/env_chemistry_NMR_noGal.csv", header = T)
+nmr_chem = read.csv("env_chemistry_NMR_noGal.csv", header = T)
 
-biogeochem = read.csv("/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/supplementary_tables/env_biogeochemistry.csv", header=T, row.names = 1) 
+biogeochem = read.csv("env_biogeochemistry.csv", header=T, row.names = 1) 
 
 biogeochem_df = biogeochem %>%
   t() %>%
@@ -2193,7 +2191,7 @@ rnaexpress_samplePoint_bars
 
 #Now lets look at the lysogeny vs lytic distributions along the moisture gradients
 
-lysogeny_vOTUs = read.csv("/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/viral_lifestyle/lysogenic_DNA_vOTU_expression_geTMM.csv", header = T)
+lysogeny_vOTUs = read.csv("lysogenic_DNA_vOTU_expression_geTMM.csv", header = T)
 
 lysogeny_vOTUs_long = lysogeny_vOTUs %>%
   pivot_longer( cols = -X, 
@@ -2230,7 +2228,7 @@ adonis2(formula = dm.vOTUs_lysogenic ~ percent_water_content, data = sample_meta
 
 #Let's try this one more time but using rpk instead of geTMM, let's see if that final normalization step is causing weird distribution issues because these are overall low abundance.
 
-lysogeny_vOTUs_RPK = read.csv("/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/viral_lifestyle/lysogenic_DNA_vOTU_expression_rpk.csv", header = T)
+lysogeny_vOTUs_RPK = read.csv("lysogenic_DNA_vOTU_expression_rpk.csv", header = T)
 
 lysogeny_vOTUs_RPK_long = lysogeny_vOTUs_RPK %>%
   pivot_longer( cols = -X, 
@@ -2362,783 +2360,4 @@ wilcox_rna = pairwise.wilcox.test(Ord_full_RNA_vOTUs_count$Detected_vOTUs_RNA,
                                    p.adjust.method = "BH")
 print(wilcox_rna)
 
-```
-
-```{r Bacterial and Archaeal community patterns}
-
-variables_to_keep7 = c("datastream_metadat", "sample_metadata", "nmr_chem_df", "NMDS_Bray_dnaexpress", "geTMM_dna_expression_genome", "RNA_expressed_abundProxy", "biogeochem_df") #All these vOTUs are a subset of this larger one, so keeping it in so i can subset it more easily.
-rm(list=setdiff(ls(), variables_to_keep7)) #clean out the environment
-
-#I generated these MAGs from the bacterial metagenomes. now i'm giong to try and do some ordinations with them.
-
-MAG_expression = read.table("/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/read_mapping_analyses/featureCounts_376_MAGs_output_unstranded_overlapping_paired.txt", sep="\t", header = T)
-
-MAG_expression_noZero =  MAG_expression %>% 
-  filter(rowSums(select(., 7:19)) != 0) %>% #Remove rows where the sum of the values in columns 7 to 19 is zero - just to make the processing quicker.
-  mutate(across(7:19, ~ ifelse(. < 5, 0, .))) %>% #Replace counts less than 5 with zero. Minimum of 5 counts per gene.
-  filter(rowSums(select(., 7:19)) != 0) %>% #Re-filter out any gene that is completely zero
-  mutate(full_id = paste(Chr, Geneid, sep = "_")) %>% # Append Geneid column to Chr column with an underscore separator
-  column_to_rownames("full_id") %>%
-  select(-Geneid, -Chr, -Start, -End, -Strand) #Remove a few cols.
-  
-#calculate RPK
-rpk_metaT_MAGs = ((MAG_expression_noZero[,2:14]*10^3)/MAG_expression_noZero[,1]) #note, we multiply by 10^3 here because geTMM expects kilobase pairs on lengths and featurecounts_dna_expression reports bps.
-group_metaT_MAGs = c(rep("A",ncol(rpk_metaT_MAGs)))
-
-#calculate geTMM
-rpk.norm_MAGs = DGEList(counts=rpk_metaT_MAGs,group=group_metaT_MAGs)
-rpk.norm_MAGs = calcNormFactors(rpk.norm_MAGs)
-geTMM_MAGs_norm.expression.rpk_edger = as.data.frame(cpm(rpk.norm_MAGs))
-
-#Let's add these up for myself by sample moisture. 
-geTMM_MAGs_norm.expression.rpk_edger$low_moisture_sum = rowSums(geTMM_MAGs_norm.expression.rpk_edger[, c("SM1001", "SM1002", "SM1027", "SM1028", "SM1029")])
-
-# Create the "intermediate_moisture_sum" column
-geTMM_MAGs_norm.expression.rpk_edger$intermediate_moisture_sum = rowSums(geTMM_MAGs_norm.expression.rpk_edger[, c("SM1003", "SM1026", "SM1030", "SM1050")])
-
-# Create the "high_moisture_sum" column
-geTMM_MAGs_norm.expression.rpk_edger$high_moisture_sum = rowSums(geTMM_MAGs_norm.expression.rpk_edger[, c("SM1000", "SM1004", "SM1005", "SM1031")])
-
-#write.csv(geTMM_MAGs_norm.expression.rpk_edger, file="MAG_geTMM_expression.csv")
-
-#now aggregate these at a genome level. Bring back the ids from the original file
-geTMM_MAGs_expression_genome = geTMM_MAGs_norm.expression.rpk_edger %>%
-  rownames_to_column("full_id") %>%
-  mutate(bin_id = str_extract(full_id, "^SM\\d+_bin\\.\\d+")) %>% #pull out bin info
-  select(-full_id) %>% #remove the full id were gonna aggregate
-  group_by(bin_id) %>% #group by genome
-  summarise(across(everything(), sum, na.rm = TRUE)) %>% #aggregate
-  ungroup() %>%
-  column_to_rownames("bin_id") #clean.
-
-# Sum the expression values for each sample column
-sample_sums = colSums(rpk_metaT_MAGs)
-
-# Create a data frame from the summed values
-sample_sums_df = data.frame(Sample = names(sample_sums), 
-                             TotalExpression = sample_sums)
-
-# Define the moisture levels for each sample
-sample_sums_df = sample_sums_df %>%
-  mutate(Moisture = case_when(
-    Sample %in% c("SM1001", "SM1002", "SM1027", "SM1028", "SM1029") ~ "Low",
-    Sample %in% c("SM1003", "SM1026", "SM1030", "SM1050") ~ "Intermediate",
-    Sample %in% c("SM1000", "SM1004", "SM1005", "SM1031") ~ "High",
-    TRUE ~ NA_character_
-  ))
-
-# Remove any NA values in Moisture (if there are any samples not categorized)
-sample_sums_df = sample_sums_df %>% filter(!is.na(Moisture))
-
-# Create the boxplot with specified colors
-rpk_MAG_moisture = ggplot(sample_sums_df, aes(x = Moisture, y = TotalExpression, fill = Moisture)) +
-  geom_boxplot() +
-  geom_jitter(width = 0.2, alpha = 0.5) +
-  scale_fill_manual(values = c("Low" = "#e66294", "Intermediate" = "#ffcdbd", "High" = "#628b29")) +
-  labs(title = "Boxplot of Total Gene Expression by Moisture Level",
-       x = "Moisture Level",
-       y = "Total Sum of Gene Expression") +
-  theme_minimal()
-
-rpk_MAG_moisture
-
-#ggsave(rpk_MAG_moisture, file="MAG_rpk_expression.pdf")
-
-# Perform ANOVA to test for significant differences
-anova_result = aov(TotalExpression ~ Moisture, data = sample_sums_df)
-summary(anova_result)
-
-# Perform Tukey's HSD test for pairwise comparisons
-tukey_result = TukeyHSD(anova_result)
-print(tukey_result)
-
-#Just for ease of access i'm going to bring in the annotations for all of these expressed genes.
-MAG_annotations = read.delim("/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/supplementary_tables/MAG_annotations.tsv", sep="\t", header = T)
-
-geTMM_MAGs_expression_genome = geTMM_MAGs_expression_genome %>%
-  select(-c(low_moisture_sum, intermediate_moisture_sum, high_moisture_sum)) #Remove these sums that i made for the plot above.
-
-#Now to start actually plotting community expression on ggplot.
-NMDS_Bray_MAG=metaMDS(t(geTMM_MAGs_expression_genome), distance = "bray", k =2,
-                              noshare = 0.1, trace = 1, trymax = 999, autotransform=T)
-stressplot(NMDS_Bray_MAG) #looks good
-
-#start with prcomp
-chemmagexpress.pca=prcomp(na.omit(biogeochem_df), center=TRUE, scale.=TRUE)
-magaexpressord=metaMDS(t(geTMM_MAGs_expression_genome), distance = "bray")
-chemmagexpressfit_ord = envfit(magaexpressord, biogeochem_df, perm = 999, na.rm=TRUE)
-vegan::scores(chemmagexpressfit_ord, "vectors")
-#pdf("chemical_plot_MAGexpress.pdf")
-plot(magaexpressord)
-plot(chemmagexpressfit_ord)
-plot(chemmagexpressfit_ord, p.max = 0.05, col = "green")
-#dev.off()
-
-
-MAG_data.scores = as.data.frame(vegan::scores(NMDS_Bray_MAG)$sites)
-MAG_data.scores$irrigationtreatment = sample_metadata$Irrigation
-MAG_data.scores$plot = sample_metadata$Plot
-MAG_data.scores$plot=as.factor(MAG_data.scores$plot)
-MAG_data.scores$datesampled = sample_metadata$Season
-MAG_data.scores$percent_water_content = sample_metadata$percent_water_content
-MAG_data.scores$water_category_soft = sample_metadata$water_category_soft
-
-#Quick one here:
-mcolors=c("#628b29", "#ffcdbd", "#e66294","#2F9DA1", "#FF5F5F", "#c5c5c5", "#83deff", "#eeffc5",  "#39394a", "#eeca03", "#de9400","#ffeea4")
-
-shape_values = c("fall" = 15,  # Square
-                  "spring" = 16)  # Circle
-
-MAG_simplePlot = MAG_data.scores %>%
-  ggplot(aes(x = NMDS1, y = NMDS2)) +
-  geom_point(aes(shape=datesampled, color=plot), size = 5) +
-  scale_color_manual(values=mcolors) +
-  new_scale_color()+
-  theme_bw()  +
-  scale_color_manual(values=mcolors) +
-  scale_fill_manual(values=mcolors) +
-  scale_shape_manual(values=shape_values) +
-  labs(title="vOTU NMDS expression Irrigation Treatment")
-
-MAG_simplePlot
-
-#Now more detailed
-
-
-en_MAG = envfit(NMDS_Bray_MAG, biogeochem_df, permutations = 999, na.rm = TRUE)
-en_coord_cont_MAG = as.data.frame(vegan::scores(en_MAG, "vectors")) * ordiArrowMul(en_MAG)
-en_coord_cont_MAG$Compound = rownames(en_coord_cont_MAG)
-
-###########Now do the final plot with the loadings as bars.
-distance = function(x, y, home = c(0,0)) {
-  sqrt((x-home[1])^2 + (y-home[2])^2)
-}
-
-#create loadings df for plot arrows
-v_scrs = as.data.frame(vegan::scores(en_MAG, display = "vectors"))
-v_scrs = cbind(v_scrs*ordiArrowMul(en_MAG), Compound = rownames(v_scrs))
-
-v_scrs = v_scrs %>%
-  mutate(dist_pc1pc2 = distance(NMDS1, NMDS2), #distance in space from center
-         scaled_dist = dist_pc1pc2 * 10)
-
-#get top 10 compounds based on distance in space from center
-top_dist_compounds = v_scrs %>%
-  arrange(desc(scaled_dist)) %>%
-  slice_head(n = 10) %>%
-  mutate(num_lab = 1:10) %>%
-  select(Compound, num_lab)
-
-#make plotting columns for loadings df
-v_scrs = v_scrs %>%
-  mutate(top_c = ifelse(Compound %in% top_dist_compounds$Compound,"top","other"),
-         alpha_factor = ifelse(top_c == "top", 1, 0.5),
-         plot_pc1 = ifelse(top_c == "top", NMDS1, 0),
-         plot_pc2 = ifelse(top_c == "top", NMDS2, 0),
-         top_label = ifelse(top_c == "top", Compound, "")) %>%
-  left_join(top_dist_compounds, by = c("Compound"))
-
-MAG_samplePoint_bars = MAG_data.scores %>%
-  ggplot(aes(x = NMDS1, y = NMDS2)) +
-  geom_segment(data = v_scrs,
-               aes(x= 0, xend = NMDS1*1, 
-                   y = 0, yend = NMDS2*1, 
-                   alpha = alpha_factor,
-                   color = Compound),
-               arrow = arrow(length = unit(0.5, "cm")),
-               inherit.aes = FALSE)  +
-  geom_polygon(aes(fill = water_category_soft, color = water_category_soft), alpha = 0.2, linetype=2, position = "identity", rule="winding") +
-  scale_color_manual(values=wes_palette("FantasticFox1", type="continuous", 50)) + 
-  geom_text(data = v_scrs,
-            aes(label = num_lab,
-                x = NMDS1*1,
-                y = NMDS2*1),
-            size = 3) +
-  new_scale_color()+
-  geom_point(aes(fill = water_category_soft), size = 4, shape = 21) +
-  theme_bw()
-
-MAG_samplePoint_bars
-
-#ggsave(MAG_samplePoint_bars, file="MAG_expr_NMDS_wLoadings.pdf", height=8, width=13)
-
-#Dang this looks almost identical to the DNA vOTU NMDS. Lets see if significantly similar:
-
-proc_dna_vs_mag=procrustes(NMDS_Bray_dnaexpress, NMDS_Bray_MAG, scale=TRUE, symmetric=T)## S3 method for class 'procrustes':
-proc_dna_vs_mag
-summary(proc_dna_vs_mag)## S3 method for class 'procrustes':
-
-# Open a PDF device
-#pdf("procrustes_plot_kind1.pdf")
-# Create the first plot
-plot(proc_dna_vs_mag, kind=1, type='text')
-# Close the PDF device
-#dev.off()
-
-# Open another PDF device for the second plot
-#pdf("procrustes_plot_kind2.pdf")
-# Create the second plot
-plot(proc_dna_vs_mag, kind=2, type='text')
-# Close the PDF device
-#dev.off()
-
-residuals(proc_dna_vs_mag)
-
-protest(NMDS_Bray_dnaexpress, NMDS_Bray_MAG, scores = 'sites', symmetric=T, permutations=999)
-
-#Yep there it is. Cool.
-
-```
-
-
-```{r Understanding occupancy and splitting}
-
-variables_to_keep8 = c("datastream_metadat", "sample_metadata", "nmr_chem_df", "geTMM_dna_expression_genome", "RNA_expressed_abundProxy", "biogeochem_df") #All these vOTUs are a subset of this larger one, so keeping it in so i can subset it more easily.
-rm(list=setdiff(ls(), variables_to_keep8)) #clean out the environment
-
-occupancy_expresss = read.csv("/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/read_mapping_analyses/preliminary_analyses/geTMM_normalized_metaT_3.4_DNA_vOTUs_grouped_v2.csv")
-
-occupancy_expresss_filtered = occupancy_expresss %>%
-  filter(!(lower_avg == 0 & higher_avg == 0))
-
-scatter_plot = ggplot(occupancy_expresss_filtered, aes(x = lower_avg, y = higher_avg, size = occupancy, color = class)) +
-  geom_point(alpha = 0.6) +  # Adjust alpha for opacity
-  theme_minimal() +
-  scale_x_log10() +
-  scale_y_log10() +
-  labs(title = "Scatterplot of Higher_avg vs Lower_avg",
-       x = "Low Moisture Average geTMM (log scale)",
-       y = "High Moisture Average geTMM (log scale)",
-       size = "Occupancy",
-       color = "Class")
-
-scatter_plot
-
-# Density plot above the scatterplot
-density_plot_x = ggplot(occupancy_expresss_filtered, aes(x = lower_avg, fill = class)) +
-  geom_density(alpha = 0.6) +  # Adjust alpha for opacity
-  theme_minimal() +
-  scale_x_log10() +
-  labs(title = "Density Plot of Lower_avg by Class",
-       x = "Low Moisture Average geTMM (log scale)") +
-  theme(axis.title.y = element_blank(),
-        axis.text.y = element_blank(),
-        axis.ticks.y = element_blank())
-
-density_plot_x
-
-# Density plot to the right of the scatterplot
-density_plot_y = ggplot(occupancy_expresss_filtered, aes(x = higher_avg, fill = class)) +
-  geom_density(alpha = 0.6) +  # Adjust alpha for opacity
-  theme_minimal() +
-  scale_x_log10() +
-  labs(title = "Density Plot of Higher_avg by Class",
-       x = "High Moisture Average geTMM (log scale)") +
-  theme(axis.title.y = element_blank(),
-        axis.text.y = element_blank(),
-        axis.ticks.y = element_blank()) +
-  coord_flip()  # Flip coordinates for density on y-axis
-
-density_plot_y
-
-#ggsave(scatter_plot, file = "scatterplot_Express.pdf", width = 8, height = 5)
-#ggsave(density_plot_x, file = "density_x_Express.pdf")
-#ggsave(density_plot_y, file = "density_y_Express.pdf")
-
-###
-#Let's take a step back here. I want to make a similar plot but with expression on x and with abundance on y. I will then make two plots, one for low moisture, one for high moisture. i will only do this for organisms that are expressed, and remove anything that is abundance but not expressed. This plot is going to give us information regarding viruses that are expressed and whether they are also highly abundant.
-
-#I'm going to read in the files from the normalization steps that i did initially. 
-
-DNA_vOTU_expression = read.csv("/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/read_mapping_analyses/geTMM_normalized_DNA_vOTU_expression.csv")
-
-DNA_vOTU_abundance = read.csv("/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/read_mapping_analyses/relabund_DNA_vOTU_abundance.csv")
-
-DNA_vOTU_abundance_and_expression = merge(DNA_vOTU_expression, DNA_vOTU_abundance, by = "X")
-
-sample_metadata = read.csv("/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/supplementary_tables/TableSX_sample_metadata.csv")
-
-vOTU_abund_expression_df_wide = DNA_vOTU_abundance_and_expression %>%
-  pivot_longer(
-    cols = -X, 
-    names_to = "sample_var", 
-    values_to = "value"
-    ) %>%
-  separate(sample_var, into = c("sample_id", "data_type"), sep = "_", extra = "merge") %>%
-  pivot_wider(names_from = data_type, values_from = value)
-
-# Merge with sample_metadata
-merged_with_metadata = vOTU_abund_expression_df_wide %>%
-  left_join(sample_metadata, by = c("sample_id" = "sample")) %>%
-  select(-c(5, 9:11, 13:15, 17:26))
-
-#write.csv(merged_with_metadata, file = "mered_with_metadata.csv")
-
-#One more merge, have to bring in the occupancy calls.
-
-occupancy = read.csv("/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/read_mapping_analyses/occupancy.csv")
-
-DNA_vOTU_abundance_and_expression_w_occupancy = merge(merged_with_metadata, occupancy, by = "X")
-
-#write.csv(DNA_vOTU_abundance_and_expression_w_occupancy, file = "dna_abund_occupancy.csv")
-
-df_filtered = DNA_vOTU_abundance_and_expression_w_occupancy %>% 
-  filter(MT > 0, MG > 0) #just leaving this here to test it. 
-
-ggplot(DNA_vOTU_abundance_and_expression_w_occupancy, aes(x = occupancy, y = log(MT), fill = occupancy)) +
-  geom_violin(trim = FALSE) +
-  geom_boxplot(width = 0.1, position = position_dodge(width = 0.9), alpha = 0.5, colour = "black") +
-  theme_minimal() +
-  labs(title = "MT Distribution Across Occupancy Groups", x = "Occupancy Group", y = "MT") +
-  theme(legend.position = "none")
-
-ggplot(DNA_vOTU_abundance_and_expression_w_occupancy, aes(x = occupancy, y = log(MG), fill = occupancy)) +
-  geom_violin(trim = FALSE) +
-  geom_boxplot(width = 0.1, position = position_dodge(width = 0.9), alpha = 0.5, colour = "black") +
-  theme_minimal() +
-  labs(title = "MG Distribution Across Occupancy Groups", x = "Occupancy Group", y = "MG") +
-  theme(legend.position = "none")
-
-#These violin plots and scatter plots really suggest that occupancy doesn't totally matter. lets make sure now by making an NMDS of these vOTUs.
-
-DNA_vOTU_abundance_and_expression_MT = DNA_vOTU_abundance_and_expression %>%
-  select(1:14)
-
-DNA_vOTU_abundance_and_expression_MG = DNA_vOTU_abundance_and_expression %>%
-  select(1, 15:27)# %>%
-  #select(-c(SM1001_MG, SM1002_MG))
-
-merged_df_w_occupancy = merge(DNA_vOTU_abundance_and_expression_MT, occupancy, by="X")
-
-merged_w_occupancy_long_df = merged_df_w_occupancy %>%
-  pivot_longer(cols = 2:(ncol(merged_df_w_occupancy)-1), names_to = "sample", values_to = "expression")
-
-#Theres so much zeroes here that i'm wondering if i should remove them and only really compare what is present. problem is that idk if the zeroes are real, i am almost certain they are not. so then do we compare what we have? if yes - occupancy isn't totally relevant. If no - then obviously it looks like occupancy are highly different.
-
-ggplot(merged_w_occupancy_long_df, aes(x = occupancy, y = log(expression), fill = occupancy)) +
-  geom_boxplot() +
-  theme_minimal() +
-  labs(title = "Viral Expression by Occupancy", x = "Occupancy", y = "Expression")
-
-ggplot(merged_w_occupancy_long_df, aes(x = occupancy, y = expression, fill = occupancy)) +
-  geom_boxplot() +
-  theme_minimal() +
-  labs(title = "Viral Expression by Occupancy", x = "Occupancy", y = "Expression")
-
-#I'm going to proceed here with the intermediate + high occupancy. The logic is that a virus needs to be in at least 25% of samples (4 sample minimum) to be considered for statistical analyses. There is enough logic here to not do stats and ecology on one-of abundances. so lets proceed with this subset for now.
-
-merged_df_w_occupancy_int_high = merged_df_w_occupancy %>%
-  filter(occupancy!="low") %>%
-  column_to_rownames(var="X")
-
-
-###
-# Filter the data for higher moisture category and high/low occupancy
-higher_moisture_df = DNA_vOTU_abundance_and_expression_w_occupancy %>% 
-  filter(water_category_soft == 'higher', occupancy %in% c('high', 'low'))
-
-# Perform t-test for MT expression between high and low occupancy in higher moisture category
-t_test_higher_moisture = t.test(MT ~ occupancy, data = higher_moisture_df)
-
-# Print the t-test result for higher moisture
-print(paste("T-test result for higher moisture category:"))
-print(t_test_higher_moisture)
-
-# Filter the data for lower moisture category and high/low occupancy
-lower_moisture_df = DNA_vOTU_abundance_and_expression_w_occupancy %>% 
-  filter(water_category_soft == 'lower', occupancy %in% c('high', 'low'))
-
-# Perform t-test for MT expression between high and low occupancy in lower moisture category
-t_test_lower_moisture = t.test(MT ~ occupancy, data = lower_moisture_df)
-
-# Print the t-test result for lower moisture
-print(paste("T-test result for lower moisture category:"))
-print(t_test_lower_moisture)
-
-# Plot the data for higher moisture category
-ggplot(data = higher_moisture_df, aes(x = occupancy, y = MT)) +
-  geom_point() +
-  labs(title = "Expression Levels in Higher Moisture by Occupancy", 
-       x = "Occupancy", 
-       y = "Expression Levels (MT)")
-
-# Save the plot for higher moisture category
-#ggsave("expression_levels_higher_moisture_occupancy.png")
-
-# Plot the data for lower moisture category
-ggplot(data = lower_moisture_df, aes(x = occupancy, y = MT)) +
-  geom_point() +
-  labs(title = "Expression Levels in Lower Moisture by Occupancy", 
-       x = "Occupancy", 
-       y = "Expression Levels (MT)")
-
-# Save the plot for lower moisture category
-#ggsave("expression_levels_lower_moisture_occupancy.png")
-
-#Maybe we can test out some linear model here to account for sample-level variability?
-
-library(lme4)
-library(lmerTest)
-
-lmer_model_all = lmer(MT ~ occupancy + water_category_soft + (1 | Plot), 
-                       data = DNA_vOTU_abundance_and_expression_w_occupancy)
-
-# Summarize the model
-summary_model_all = summary(lmer_model_all)
-print(paste("Linear Mixed-Effects Model summary:"))
-print(summary_model_all)
-
-#Now lets look at this a little differently. lets look at expression vs abundance on same plot.
-
-scatter_plot = ggplot(DNA_vOTU_abundance_and_expression_w_occupancy, aes(x = MT, y = MG, size = occupancy, color = occupancy)) +
-  geom_point(alpha = 0.6) +  # Adjust alpha for opacity
-  theme_minimal() +
-  scale_x_log10() +
-  scale_y_log10() +
-  labs(title = "Scatterplot of Higher_avg vs Lower_avg",
-       x = "Expression (log)",
-       y = "Abundance (log)",
-       size = "Occupancy",
-       color = "Class")
-
-scatter_plot
-
-# Density plot above the scatterplot
-density_plot_x = ggplot(DNA_vOTU_abundance_and_expression_w_occupancy, aes(x = MT, fill = occupancy)) +
-  geom_density(alpha = 0.6) +  # Adjust alpha for opacity
-  theme_minimal() +
-  scale_x_log10() +
-  labs(title = "Density Plot of Lower_avg by Class",
-       x = "Low Moisture Average geTMM (log scale)") +
-  theme(axis.title.y = element_blank(),
-        axis.text.y = element_blank(),
-        axis.ticks.y = element_blank())
-
-density_plot_x
-
-# Density plot to the right of the scatterplot
-density_plot_y = ggplot(DNA_vOTU_abundance_and_expression_w_occupancy, aes(x = MG, fill = occupancy)) +
-  geom_density(alpha = 0.6) +  # Adjust alpha for opacity
-  theme_minimal() +
-  scale_x_log10() +
-  labs(title = "Density Plot of Higher_avg by Class",
-       x = "High Moisture Average geTMM (log scale)") +
-  theme(axis.title.y = element_blank(),
-        axis.text.y = element_blank(),
-        axis.ticks.y = element_blank()) +
-  coord_flip()  # Flip coordinates for density on y-axis
-
-density_plot_y
-
-
-#ggsave(scatter_plot, file = "scatterplot_Express_vs_Abund.pdf", width = 8, height = 5)
-#ggsave(density_plot_x, file = "density_x_Express_vs_Abund.pdf")
-#ggsave(density_plot_y, file = "density_y_Express_vs_Abund.pdf")
-
-#Now let's do this for the RNA expression to see those patterns:
-
-RNA_occupancy_expresss = read.csv("/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/read_mapping_analyses/preliminary_analyses/rna_expression_prox.csv")
-
-RNA_occupancy_express = RNA_occupancy_expresss %>%
-  filter(!(lower_avg == 0 & higher_avg == 0))
-
-scatter_plot = ggplot(RNA_occupancy_express, aes(x = lower_avg, y = higher_avg, size = occupancy, color = class)) +
-  geom_point(alpha = 0.6) +  # Adjust alpha for opacity
-  theme_minimal() +
-  scale_x_log10() +
-  scale_y_log10() +
-  labs(title = "Scatterplot of Higher_avg vs Lower_avg",
-       x = "Low Moisture Average geTMM (log scale)",
-       y = "High Moisture Average geTMM (log scale)",
-       size = "Occupancy",
-       color = "Class")
-
-scatter_plot
-
-# Density plot above the scatterplot
-density_plot_x = ggplot(RNA_occupancy_express, aes(x = lower_avg, fill = class)) +
-  geom_density(alpha = 0.6) +  # Adjust alpha for opacity
-  theme_minimal() +
-  scale_x_log10() +
-  labs(title = "Density Plot of Lower_avg by Class",
-       x = "Low Moisture Average geTMM (log scale)") +
-  theme(axis.title.y = element_blank(),
-        axis.text.y = element_blank(),
-        axis.ticks.y = element_blank())
-
-density_plot_x
-
-# Density plot to the right of the scatterplot
-density_plot_y = ggplot(RNA_occupancy_express, aes(x = higher_avg, fill = class)) +
-  geom_density(alpha = 0.6) +  # Adjust alpha for opacity
-  theme_minimal() +
-  scale_x_log10() +
-  labs(title = "Density Plot of Higher_avg by Class",
-       x = "High Moisture Average geTMM (log scale)") +
-  theme(axis.title.y = element_blank(),
-        axis.text.y = element_blank(),
-        axis.ticks.y = element_blank()) +
-  coord_flip()  # Flip coordinates for density on y-axis
-
-density_plot_y
-
-#ggsave(scatter_plot, file = "scatterplot_Express_RNA.pdf", width = 8, height = 5)
-#ggsave(density_plot_x, file = "density_x_Express_RNA.pdf")
-#ggsave(density_plot_y, file = "density_y_Express_RNA.pdf"
-
-variables_to_keep8 = c("datastream_metadat", "sample_metadata", "nmr_chem_df", "merged_df_w_occupancy_int_high", "geTMM_dna_expression_genome", "RNA_expressed_abundProxy", "RNA_occupancy_express") #All these vOTUs are a subset of this larger one, so keeping it in so i can subset it more easily.
-rm(list=setdiff(ls(), variables_to_keep8)) #clean out the environment
-
-```
-
-
-```{r Viral correlations to geochemistry and metabolites}
-
-RNA_vOTU_corr_df = RNA_expressed_abundProxy
-
-biogeochem_df = read.csv("/Volumes/Macintosh HD/Users/rodr771/Library/CloudStorage/OneDrive-PNNL/Documents/3.4_interkingdom/supplementary_tables/env_biogeochemistry.csv", header = T)
-
-biogeochem_df = biogeochem_df %>%
-  column_to_rownames("Sample")
-
-Ord_full_dna_express = metaMDS(t(geTMM_dna_expression_genome), distance = "bray", noshare = TRUE, trace = 1, autotransform = TRUE)
-Ord_full_dna_scores = as.data.frame(vegan::scores(Ord_full_dna_express)$sites)
-
-# NMDS for DNA viruses
-Ord_full_dna_express = metaMDS(t(geTMM_dna_expression_genome), distance = "bray", noshare = TRUE, trace = 1, autotransform = TRUE)
-Ord_full_dna_scores = as.data.frame(vegan::scores(Ord_full_dna_express)$sites)
-
-# NMDS for RNA viruses
-Ord_full_rna_express = metaMDS(t(RNA_vOTU_corr_df), distance = "bray", noshare = TRUE, trace = 1, autotransform = TRUE)
-Ord_full_rna_scores = as.data.frame(vegan::scores(Ord_full_rna_express)$sites)
-
-# Initialize an empty data frame to store correlation results
-chem_features = rownames(biogeochem_df)
-cor_results = data.frame(Feature = chem_features,
-                         R_NMDS1_dna = numeric(length(chem_features)), p_value_NMDS1_dna = numeric(length(chem_features)),
-                         R_NMDS2_dna = numeric(length(chem_features)), p_value_NMDS2_dna = numeric(length(chem_features)),
-                         R_NMDS1_rna = numeric(length(chem_features)), p_value_NMDS1_rna = numeric(length(chem_features)),
-                         R_NMDS2_rna = numeric(length(chem_features)), p_value_NMDS2_rna = numeric(length(chem_features)))
-
-# Compute Spearman correlations and p-values for DNA
-for (i in seq_along(chem_features)) {
-  feature = chem_features[i]
-  correlation_dna_NMDS1 = cor.test(Ord_full_dna_scores$NMDS1, t(biogeochem_df[feature, ]), method = "spearman", use = "pairwise.complete.obs")
-  correlation_dna_NMDS2 = cor.test(Ord_full_dna_scores$NMDS2, t(biogeochem_df[feature, ]), method = "spearman", use = "pairwise.complete.obs")
-  
-  cor_results$R_NMDS1_dna[i] = correlation_dna_NMDS1$estimate
-  cor_results$p_value_NMDS1_dna[i] = correlation_dna_NMDS1$p.value
-  
-  cor_results$R_NMDS2_dna[i] = correlation_dna_NMDS2$estimate
-  cor_results$p_value_NMDS2_dna[i] = correlation_dna_NMDS2$p.value
-}
-
-# Compute Spearman correlations and p-values for RNA
-for (i in seq_along(chem_features)) {
-  feature = chem_features[i]
-  correlation_rna_NMDS1 = cor.test(Ord_full_rna_scores$NMDS1, t(biogeochem_df[feature, ]), method = "spearman", use = "pairwise.complete.obs")
-  correlation_rna_NMDS2 = cor.test(Ord_full_rna_scores$NMDS2, t(biogeochem_df[feature, ]), method = "spearman", use = "pairwise.complete.obs")
-  
-  cor_results$R_NMDS1_rna[i] = correlation_rna_NMDS1$estimate
-  cor_results$p_value_NMDS1_rna[i] = correlation_rna_NMDS1$p.value
-  
-  cor_results$R_NMDS2_rna[i] = correlation_rna_NMDS2$estimate
-  cor_results$p_value_NMDS2_rna[i] = correlation_rna_NMDS2$p.value
-}
-
-# Combine the results into a long-format data frame for plot
-corrs_pivot_longer = cor_results %>%
-  pivot_longer(
-    cols = -Feature,
-    names_to = c(".value", "NMDS_Axis", "Dataset"),
-    names_pattern = "(.*)_NMDS(\\d)_(.*)")
-
-# Create the scatter bubble plot
-scatter_bubble = ggplot(corrs_pivot_longer, aes(x = Feature, y = R, size = p_value, color = Dataset, shape = NMDS_Axis)) +
-  geom_point(alpha = 0.7) +
-  theme_minimal() +
-  labs(x = "Chemistry Feature", y = "Spearman Correlation (R)", size = "p-value", color = "Genome type", 
-       shape = "NMDS Axis") +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "grey") +
-  scale_y_continuous(breaks = seq(-1, 1, by = 0.5), limits = c(-1, 1)) +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.3)) +
-  scale_color_manual(values = c("dna" = "#6daef8", "rna" = "#c4c100"))
-
-scatter_bubble
-
-#ggsave(scatter_bubble, file="scatter_bubble_NMSD1&2.pdf")
-
-```
-
-```{WGCNA - Unused for Manuscript}
-library(WGCNA)
-
-#I want to run WGCNA of the DNA viruses and their putative microbial hosts (MAGs). I want to make sure that i am accounting for normalizations, which means that i have to geTMM these datasets at the same time to get the distributions correct. Bringing in some of the code from the initial norms and merging them.
-
-#Now we WGCNA
-
-# Choosing the soft-thresholding power: analysis of network topology
-allowWGCNAThreads() #this will enable multi threading.
-
-#power = c(c(1:10), seq(from = 12, to=30, by=1)) # Choose a set of soft-thresholding powers
-power = c(seq(1, 20, by = 1), seq(12, 20, by = 2))
-                
-sft = pickSoftThreshold(t(DNA_vOTU_expression_int_high), powerVector = power, verbose = 5, networkType = "signed hybrid") # Call the network topology analysis function
-
-# Plot the results:
-sizeGrWindow(9, 5)
-par(mfrow = c(1,2))
-cex1 = 0.9
-
-# Scale-free topology fit index as a function of the soft-thresholding power
-plot(sft$fitIndices[,1], -sign(sft$fitIndices[,3])*sft$fitIndices[,2],
-     xlab="Soft Threshold (power)",ylab="Scale Free Topology Model Fit,signed R^2",type="n",
-     main = paste("Scale independence"))
-text(sft$fitIndices[,1], -sign(sft$fitIndices[,3])*sft$fitIndices[,2],
-     labels=power,cex=cex1,col="red")
-abline(h=0.60,col="red") # this line corresponds to using an R^2 cut-off of h
-
-# Mean connectivity as a function of the soft-thresholding power
-plot(sft$fitIndices[,1], sft$fitIndices[,5],
-     xlab="Soft Threshold (power)",ylab="Mean Connectivity", type="n",
-     main = paste("Mean connectivity"))
-text(sft$fitIndices[,1], sft$fitIndices[,5], labels=power, cex=cex1,col="red")
-
-power_thresh = 6 # Set power from first value to go over 0.8 in plot above.
-
-DNA_vOTU_expression_int_high = DNA_vOTU_expression_int_high %>%
-  column_to_rownames(var="genome_id")
-
-# One-step network construction and module detection
-set.seed(1234)
-net = blockwiseModules(t(DNA_vOTU_expression_int_high), power = power_thresh,
-                       TOMType = "signed", networkType = "signed hybrid",
-                       minModuleSize = 20, ##
-                       reassignThreshold = 0, mergeCutHeight = 0.25,
-                       numericLabels = F, pamRespectsDendro = FALSE,
-                       saveTOMs = F, 
-                       verbose = 3)
-
-# generating TOM matrix
-TOM = TOMsimilarity(adjacency(t(DNA_vOTU_expression_int_high), power = power_thresh, type = "signed hybrid"), TOMType = "signed") # calculates TOM; the correlations used in
-# creating networks in cytoscape
-
-# exporting network for cytoscape
-dimnames(TOM) = list(colnames(t(DNA_vOTU_expression_int_high), colnames(t(DNA_vOTU_expression_int_high)))) # name dimensions
-
-cyt = exportNetworkToCytoscape(TOM,
-                               edgeFile = paste0("Cyto_Edges_",
-                                                 "0.1", "-thresh_", "signed",
-                                                 ".txt"),
-                               nodeFile = paste0("Cyto_Nodes_",
-                                                 "0.1", "-thresh_", "signed",
-                                                 ".txt"),
-                               threshold = 0.1,
-                               nodeAttr = labels2colors(net$colors))
-
-# inspect modules
-table(net$colors)
-net$colors
-
-# open a graphics window
-sizeGrWindow(12, 9)
-
-# Convert labels to colors for plotting if you selected numericLabels = T
-#mergedColors = labels2colors(net$colors)
-#table(mergedColors)
-
-moduleColors = net$colors
-moduleLabels = net$colors
-
-# Plot the dendrogram and the module colors underneath
-mergedColors = labels2colors(net$colors)
-
-plotDendroAndColors(
-  net$dendrograms[[1]],
-  mergedColors[net$blockGenes[[1]]],
-  "Module colors",
-  dendroLabels = FALSE,
-  hang = 0.03,
-  addGuide = TRUE,
-  guideHang = 0.05 )
-
-
-MEs = net$MEs;
-geneTree = net$dendrograms[[1]];
-nPop = ncol(t(DNA_vOTU_expression_int_high))
-nSamples = nrow(t(DNA_vOTU_expression_int_high))
-
-#I like to write out the modules and the colors of each of the organisms. So im just rerunning the net command above to get them.
-#write.csv(file="Module_eigen_values_allsamples_signedhybrid_picksft9.csv",MEs)
-#write.csv(file="Module_composition_allsamples_signedhybrid_picksft9.csv",net$colors)
-
-#I'm also going to create this merged file with the abundances so that I can use these modules for sPLS.
-colorsModulesDf = as.data.frame(net$colors)
-colorsModulesDf = tibble::rownames_to_column(colorsModulesDf, "genome_id")
-
-filtered_vOTU_df_merge = DNA_vOTU_expression_int_high %>%
-  rownames_to_column(var="genome_id")
-filtered_vOTU_df_merge_MODULES = left_join(filtered_vOTU_df_merge, colorsModulesDf, by = "genome_id")
-filtered_vOTU_df_merge_MODULES$modcol=filtered_vOTU_df_merge_MODULES$`net$colors`
-filtered_vOTU_df_merge_MODULES= filtered_vOTU_df_merge_MODULES %>%
-  filter(!is.na(modcol))
-
-filtered_vOTU_df_merge_MODULES=filtered_vOTU_df_merge_MODULES %>%
-  select(-c(`net$colors`))
-
-#write.csv(file="WGCNA_modules.csv", filtered_vOTU_df_merge_MODULES)
-
-# Calculate MEs with color labels
-MEs0 = moduleEigengenes(t(DNA_vOTU_expression_int_high), moduleColors)$eigengenes
-MEs = orderMEs(MEs0)
-
-wgcna_metadata = nmr_chem_wMoisture_df
-
-colnames(sample_metadata)[colnames(sample_metadata) == "sample"] = "Sample"
-
-moduleTraitCor = cor(MEs, t(wgcna_metadata), use = "p")
-moduleTraitPvalue = corPvalueStudent(moduleTraitCor, nSamples)
-sapply(moduleTraitPvalue, class)
-
-#Filter out and replace any p-value that is greater than 0.05 with a zero i can use to subset.
-moduleTraitCor[moduleTraitCor > -0.5 & moduleTraitCor < 0.5] = 0
-moduleTraitPvalue[moduleTraitPvalue > 0.05] = 0
-textMatrix = paste(signif(moduleTraitCor, 2), " (",signif(moduleTraitPvalue, 1), ")", sep = "")
-dim(textMatrix) = dim(moduleTraitCor)
-
-# Will display correlations and their p-values
-sizeGrWindow(5,5)
-textMatrix = paste(signif(moduleTraitCor, 2), "\n(",
-                   signif(moduleTraitPvalue, 1), ")", sep = "")
-dim(textMatrix) = dim(moduleTraitCor)
-par(mar = c(6, 8.5, 3, 3))
-par(mar = c(12, 5, 2, 2))
-
-# Display the correlation values within a heatmap plot
-labeledHeatmap(Matrix = moduleTraitCor,
-               xLabels = rownames(wgcna_metadata),
-               yLabels = names(MEs),
-               ySymbols = names(MEs),
-               colorLabels = FALSE,
-               colors = blueWhiteRed(50),
-               textMatrix = textMatrix,
-               setStdMargins = FALSE,
-               cex.text = 0.5,
-               zlim = c(-1,1),
-               main = paste("Module-trait relationships"))
-
-# display with pheatmap
-moduleTraitCor2 = as.matrix((moduleTraitCor))
-#write.csv(file="TPM_normalized_module_to_trait_corrs_allsamples.csv",moduleTraitCor2)
-moduleTraitCor2_t=t(moduleTraitCor2)
-pheatmap_large = pheatmap(moduleTraitCor2_t, 
-         cellwidth = 3,
-         cellheight = 5,
-         cluster_rows = F,
-         cluster_cols = F,
-         show_colnames = T,
-         show_rownames = T,
-         treeheight_col=T)
-
-#ggsave(pheatmap_large, file="pheatmap_allsamples_picksft.pdf", width=20, height=5)
 ```
