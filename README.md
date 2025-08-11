@@ -1,6 +1,6 @@
 ## Supplementary code for manuscript titled: Comparisons of fractionation methods for DNA and RNA viruses unearths a multifaceted relationship between viruses and soil moisture
 
-The supplementary tables that area added here contain multiple sheets that are the direct inputs to the R markdown code. Within the Rmd there are specific isntances of which sheet from which table to use as input. The rest should be (for the most part) automated to generate all figures and statistics that were used in the manuscript.
+The supplementary tables that area added here contain multiple sheets that are the direct inputs to the R markdown code. Within the Rmd there are specific isntances of which sheet from which table to use as input. The rest should be (for the most part) automated to generate all figures and statistics that were used in the manuscript. The code should take around 10min to run once you set up all dependencies and software on a standard computer.
 
 ## Author list: 
 Josué A. Rodríguez-Ramos1, Amy E. Zimmerman1, Ruonan Wu1, Sheryl Bell1, Trinidad Alfaro1, Kirsten S. Hofmockel1, William C. Nelson1**
