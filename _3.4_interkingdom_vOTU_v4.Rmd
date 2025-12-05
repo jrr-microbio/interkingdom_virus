@@ -478,10 +478,10 @@ proportions_DNA = proportions_DNA %>%
 proportions_RNA = proportions_RNA %>%
   mutate(sample_origin = factor(sample_origin, levels = c("MT_Virome", "MT_Bulk", "MT_PolyA")))
 
-proportions_length_DNA <- proportions_DNA %>%
+proportions_length_DNA = proportions_DNA %>%
   mutate(source = "DNA")
 
-proportions_length_RNA <- proportions_RNA %>%
+proportions_length_RNA = proportions_RNA %>%
   mutate(source = "RNA")
 
 combined_proportions = bind_rows(proportions_length_DNA, proportions_length_RNA)
@@ -509,10 +509,10 @@ proportion_bars
 #I also want to look at not just the lengths, but the actual qualities. letes try someting out here:
 
 #Create numerical mapping for the categorical quality
-quality_ranks <- c("Low-quality" = 1, "Medium-quality" = 2, "High-quality" = 3, "Complete" = 4)
+quality_ranks = c("Low-quality" = 1, "Medium-quality" = 2, "High-quality" = 3, "Complete" = 4)
 
 # Adding a numerical quality score to the dataframe
-long_format_overlaps_updated_nums <- long_format_overlaps_updated %>%
+long_format_overlaps_updated_nums = long_format_overlaps_updated %>%
   mutate(quality_score = quality_ranks[quality])
 
 highest_q_avg_DNA = long_format_overlaps_updated_nums %>%
@@ -522,56 +522,56 @@ highest_q_avg_RNA = long_format_overlaps_updated_nums %>%
   filter(grepl("MT", sample_origin))
 
 # Determine the sample_origin with the highest quality score for each group
-highest_quality_DNA <- highest_q_avg_DNA %>%
+highest_quality_DNA = highest_q_avg_DNA %>%
   group_by(group) %>%
   filter(quality_score == max(quality_score)) %>% 
   ungroup()
 
 #Need to account for ties here. Add fractional counts if there are ties within groups
-ties_resolved_DNA <- highest_quality_DNA %>%
+ties_resolved_DNA = highest_quality_DNA %>%
   group_by(group) %>%
   mutate(tie_count = n()) %>%
   ungroup()
 
 # Calculate the proportion of clusters where each data stream has the best quality
-proportions_quality_DNA <- ties_resolved_DNA %>%
+proportions_quality_DNA = ties_resolved_DNA %>%
   group_by(sample_origin) %>%
   summarize(weighted_count = sum(1 / tie_count), .groups = "drop") %>%
   mutate(proportion = weighted_count / sum(weighted_count))
 
 # Determine the sample_origin with the highest quality score for each group
-highest_quality_RNA <- highest_q_avg_RNA %>%
+highest_quality_RNA = highest_q_avg_RNA %>%
   group_by(group) %>%
   filter(quality_score == max(quality_score)) %>% 
   ungroup()
 
 #Need to account for ties here. Add fractional counts if there are ties within groups
-ties_resolved_RNA <- highest_quality_RNA %>%
+ties_resolved_RNA = highest_quality_RNA %>%
   group_by(group) %>%
   mutate(tie_count = n()) %>%
   ungroup()
 
 # Calculate the proportion of clusters where each data stream has the best quality
-proportions_quality_RNA <- ties_resolved_RNA %>%
+proportions_quality_RNA = ties_resolved_RNA %>%
   group_by(sample_origin) %>%
   summarize(weighted_count = sum(1 / tie_count), .groups = "drop") %>%
   mutate(proportion = weighted_count / sum(weighted_count))
 
-proportions_quality_DNA <- proportions_quality_DNA %>%
+proportions_quality_DNA = proportions_quality_DNA %>%
   mutate(source = "DNA")
 
-proportions_quality_RNA <- proportions_quality_RNA %>%
+proportions_quality_RNA = proportions_quality_RNA %>%
   mutate(source = "RNA")
 
 # Combine the dataframes while preserving the "source" column
-combined_proportions_quality <- bind_rows(proportions_quality_DNA, proportions_quality_RNA)
+combined_proportions_quality = bind_rows(proportions_quality_DNA, proportions_quality_RNA)
 
 # Transform the sample_origin column into a factor
-combined_proportions_quality <- combined_proportions_quality %>%
+combined_proportions_quality = combined_proportions_quality %>%
   mutate(sample_origin = factor(sample_origin, levels = c("Virome_DNA", "EukFloat_DNA", "Total_DNA", "Bacterial_DNA", "MT_Virome", "MT_Bulk", "MT_PolyA")))
 
 # Create the bar plot
-proportion_bars_quality <- ggplot(combined_proportions_quality, aes(x = sample_origin, y = proportion, fill = sample_origin)) +
+proportion_bars_quality = ggplot(combined_proportions_quality, aes(x = sample_origin, y = proportion, fill = sample_origin)) +
   geom_bar(stat = "identity", alpha = 1) +
   facet_wrap(~source, scales = "free_x") +
   coord_cartesian(ylim = c(0, 0.8)) +
@@ -944,29 +944,29 @@ proportion_ids = grouped %>%
 host_phylum_colors = c("#5a2952", "#6abdcd","#ee83b4",  "#b4cd6a","#4acda4","#e69420","#7383a4","#83acf6","#ffb6c1", "#c5ac8b", "#de4129", "black")
 
 # Step 1: Define threshold for grouping as "Other"
-threshold <- 0.01
+threshold = 0.01
 
 # Step 2: Identify phylum below the threshold for each fractionation method
-small_phyla <- proportion_ids %>%
+small_phyla = proportion_ids %>%
   group_by(fractionation_method) %>%
   filter(proportion < threshold)
 
 # Step 3: Calculate the total proportion for "Other" for each fractionation method
-other_proportions <- small_phyla %>%
+other_proportions = small_phyla %>%
   group_by(fractionation_method) %>%
   summarise(proportion = sum(proportion)) %>%
   mutate(phylum = "Other")
 
 # Step 4: Combine the "Other" category with larger phyla
-proportions_modified <- proportion_ids %>%
+proportions_modified = proportion_ids %>%
   filter(proportion >= threshold) %>% # Keep original phyla above the threshold
   bind_rows(other_proportions)        # Add the "Other" category
 
 # Step 5: Convert `phylum` back to factor to ensure levels are sorted correctly
-proportions_modified$phylum <- factor(proportions_modified$phylum, levels = c(sort(unique(proportions$phylum)), "Other"))
+proportions_modified$phylum = factor(proportions_modified$phylum, levels = c(sort(unique(proportions$phylum)), "Other"))
 
 # Step 6: Create the plot with modified data
-dnaprops <- ggplot(proportions_modified, aes(x = fractionation_method, y = proportion, fill = phylum)) + 
+dnaprops = ggplot(proportions_modified, aes(x = fractionation_method, y = proportion, fill = phylum)) + 
   geom_bar(stat = "identity", position = "fill") +
   scale_fill_manual(values = host_phylum_colors) +
   labs(
@@ -1073,7 +1073,7 @@ metrics_combined = metrics_combined_individual_datasets %>%
 source_colors = c("virome" = "#73c5f6", "eukfloat" = "#f0704a", "bacterial" = "#54bc00", "total_dna" = "#ff7bac", "mt_virome" = "#c5b4c5" , "mt_bulk" = "#fedd8d", "mt_polya" = "#8ba494")
 
 # Create Richness plot
-richness_plot <- ggplot(metrics_combined, aes(x = percent_water_content, y = richness, color = method)) +
+richness_plot = ggplot(metrics_combined, aes(x = percent_water_content, y = richness, color = method)) +
   geom_point(size = 3) +
   geom_smooth(method = "lm", se = FALSE, aes(group = method), linetype = "solid") +
   labs(
@@ -1098,18 +1098,18 @@ richness_plot
 #I want some more stats here to make it more robust. Lets run some linear models on each method so i can get the values that the line is showing in the plots above.
 # Prepare the dataset (assuming metrics_combined is already defined)
 
-metrics_combined <- metrics_combined %>%
+metrics_combined = metrics_combined %>%
   mutate(method = factor(method))  # Ensure `method` is treated as a factor
 
 # Function to fit and test a linear model for each method
-fit_and_test_lm <- function(data) {
-  lm_fit <- lm(percent_water_content ~ richness, data = data)
+fit_and_test_lm = function(data) {
+  lm_fit = lm(percent_water_content ~ richness, data = data)
   tidy(lm_fit) %>%
     filter(term == "richness")  # Extract the statistical result for the slope (richness)
 }
 
 # Split the dataset by method, fit linear models, and collect results
-lm_results_richness <- metrics_combined %>%
+lm_results_richness = metrics_combined %>%
   group_by(method) %>%
   nest() %>%
   mutate(model_results = map(data, fit_and_test_lm)) %>%
@@ -1133,14 +1133,14 @@ shannon_plot
 #ggsave(shannon_plot, file="shannon_plots.pdf")
 
 # Function to fit and test a linear model for each method
-fit_and_test_lm_shannons <- function(data) {
-  lm_fit <- lm(percent_water_content ~ shannons, data = data)
+fit_and_test_lm_shannons = function(data) {
+  lm_fit = lm(percent_water_content ~ shannons, data = data)
   tidy(lm_fit) %>%
     filter(term == "shannons")  # Extract the statistical result for the slope (richness)
 }
 
 # Split the dataset by method, fit linear models, and collect results
-lm_results_shannons <- metrics_combined %>%
+lm_results_shannons = metrics_combined %>%
   group_by(method) %>%
   nest() %>%
   mutate(model_results = map(data, fit_and_test_lm_shannons)) %>%
@@ -1165,14 +1165,14 @@ pielous_plot
 #ggsave(pielous_plot, file="pielou_plots.pdf")
        
 # Function to fit and test a linear model for each method
-fit_and_test_lm_pielous <- function(data) {
-  lm_fit <- lm(percent_water_content ~ pielous, data = data)
+fit_and_test_lm_pielous = function(data) {
+  lm_fit = lm(percent_water_content ~ pielous, data = data)
   tidy(lm_fit) %>%
     filter(term == "pielous")  # Extract the statistical result for the slope (richness)
 }
 
 # Split the dataset by method, fit linear models, and collect results
-lm_results_pielous <- metrics_combined %>%
+lm_results_pielous = metrics_combined %>%
   group_by(method) %>%
   nest() %>%
   mutate(model_results = map(data, fit_and_test_lm_pielous)) %>%
@@ -1230,14 +1230,14 @@ overallabundDNA
 #ggsave(overallabundDNA, file="Abundance_Through_Moisture.pdf", height = 8, width = 10)
 
 # Function to fit and test a linear model for each method
-fit_and_test_lm_abundDNA <- function(data) {
-  lm_fit <- lm(percent_water_content ~ total_abundance, data = data)
+fit_and_test_lm_abundDNA = function(data) {
+  lm_fit = lm(percent_water_content ~ total_abundance, data = data)
   tidy(lm_fit) %>%
     filter(term == "total_abundance")  # Extract the statistical result for the slope (richness)
 }
 
 # Split the dataset by method, fit linear models, and collect results
-fit_and_test_lm_abundDNA_res <- dna_summed_abund_votus_persamps %>%
+fit_and_test_lm_abundDNA_res = dna_summed_abund_votus_persamps %>%
   nest() %>%
   mutate(model_results = map(data, fit_and_test_lm_abundDNA)) %>%
   unnest(model_results)
@@ -1271,14 +1271,14 @@ overallabundCountsDNA
 #ggsave(overallabundCountsDNA, file="Abundant_Counts_Through_Moisture.pdf", height = 8, width = 10)
 
 # Function to fit and test a linear model for each method
-fit_and_test_lm_countsDNA <- function(data) {
-  lm_fit <- lm(percent_water_content ~ Abund_vOTUs, data = data)
+fit_and_test_lm_countsDNA = function(data) {
+  lm_fit = lm(percent_water_content ~ Abund_vOTUs, data = data)
   tidy(lm_fit) %>%
     filter(term == "Abund_vOTUs")  # Extract the statistical result for the slope (richness)
 }
 
 # Split the dataset by method, fit linear models, and collect results
-fit_and_test_lm_countsDNA_res <- dna_num_abund_votus_persamps %>%
+fit_and_test_lm_countsDNA_res = dna_num_abund_votus_persamps %>%
   nest() %>%
   mutate(model_results = map(data, fit_and_test_lm_countsDNA)) %>%
   unnest(model_results)
@@ -1310,7 +1310,7 @@ metrics_combined_Full_DNA = metrics %>%
   left_join(moisture_per_sample, by = c("base_sample_id" = "sample"))
 
 # Create Richness plot
-richness_plot <- ggplot(metrics_combined_Full_DNA, aes(x = percent_water_content, y = richness, colour = percent_water_content)) +
+richness_plot = ggplot(metrics_combined_Full_DNA, aes(x = percent_water_content, y = richness, colour = percent_water_content)) +
   geom_point(size = 8) +
   geom_smooth(method = "lm", se = F, linetype = "solid", inherit.aes = FALSE, aes(x = percent_water_content, y = richness)) +
   labs(
@@ -1330,14 +1330,14 @@ richness_plot
 # Prepare the dataset (assuming metrics_combined is already defined)
 
 # Function to fit and test a linear model for each method
-fit_and_test_lm <- function(data) {
-  lm_fit <- lm(percent_water_content ~ richness, data = data)
+fit_and_test_lm = function(data) {
+  lm_fit = lm(percent_water_content ~ richness, data = data)
   tidy(lm_fit) %>%
     filter(term == "richness")  # Extract the statistical result for the slope (richness)
 }
 
 # Split the dataset by method, fit linear models, and collect results
-lm_results_richness <- metrics_combined_Full_DNA %>%
+lm_results_richness = metrics_combined_Full_DNA %>%
   nest() %>%
   mutate(model_results = map(data, fit_and_test_lm)) %>%
   unnest(model_results)
@@ -1358,14 +1358,14 @@ shannon_plot
 #ggsave(shannon_plot, file="shannon_plots_consolidated.pdf", height = 8, width = 10)
 
 # Function to fit and test a linear model for each method
-fit_and_test_lm_shannons <- function(data) {
-  lm_fit <- lm(percent_water_content ~ shannons, data = data)
+fit_and_test_lm_shannons = function(data) {
+  lm_fit = lm(percent_water_content ~ shannons, data = data)
   tidy(lm_fit) %>%
     filter(term == "shannons")  # Extract the statistical result for the slope (richness)
 }
 
 # Split the dataset by method, fit linear models, and collect results
-lm_results_shannons <- metrics_combined_Full_DNA %>%
+lm_results_shannons = metrics_combined_Full_DNA %>%
   nest() %>%
   mutate(model_results = map(data, fit_and_test_lm_shannons)) %>%
   unnest(model_results)
@@ -1387,14 +1387,14 @@ pielous_plot
 #ggsave(pielous_plot, file="pielou_plots_consolidated.pdf", height = 8, width = 10)
        
 # Function to fit and test a linear model for each method
-fit_and_test_lm_pielous <- function(data) {
-  lm_fit <- lm(percent_water_content ~ pielous, data = data)
+fit_and_test_lm_pielous = function(data) {
+  lm_fit = lm(percent_water_content ~ pielous, data = data)
   tidy(lm_fit) %>%
     filter(term == "pielous")  # Extract the statistical result for the slope (richness)
 }
 
 # Split the dataset by method, fit linear models, and collect results
-lm_results_pielous <- metrics_combined_Full_DNA %>%
+lm_results_pielous = metrics_combined_Full_DNA %>%
   nest() %>%
   mutate(model_results = map(data, fit_and_test_lm_pielous)) %>%
   unnest(model_results)
@@ -1443,14 +1443,14 @@ overallrpkDNA
 #ggsave(overallrpkDNA, file = "DNA_vOTU_RPK.pdf", width = 15, height = 7)
 
 # Function to fit and test a linear model for each method
-fit_and_test_lm_expression <- function(data) {
-  lm_fit <- lm(percent_water_content ~ total_expression, data = data)
+fit_and_test_lm_expression = function(data) {
+  lm_fit = lm(percent_water_content ~ total_expression, data = data)
   tidy(lm_fit) %>%
     filter(term == "total_expression")  # Extract the statistical result for the slope (richness)
 }
 
 # Split the dataset by method, fit linear models, and collect results
-fit_and_test_lm_expression_res <- rpk_metaT_dna_long %>%
+fit_and_test_lm_expression_res = rpk_metaT_dna_long %>%
   nest() %>%
   mutate(model_results = map(data, fit_and_test_lm_expression)) %>%
   unnest(model_results)
@@ -1507,14 +1507,14 @@ expressed_dna_votus
 #ggsave(expressed_dna_votus, file = "DNA_active_vOTU_counts.pdf", width = 15, height = 7)
 
 # Function to fit and test a linear model for each method
-fit_and_test_lm_activevotus <- function(data) {
-  lm_fit <- lm(percent_water_content ~ Expressed_OTUs, data = data)
+fit_and_test_lm_activevotus = function(data) {
+  lm_fit = lm(percent_water_content ~ Expressed_OTUs, data = data)
   tidy(lm_fit) %>%
     filter(term == "Expressed_OTUs")  # Extract the statistical result for the slope (richness)
 }
 
 # Split the dataset by method, fit linear models, and collect results
-fit_and_test_lm_activevotus_res <- expressed_otus_moisture %>%
+fit_and_test_lm_activevotus_res = expressed_otus_moisture %>%
   nest() %>%
   mutate(model_results = map(data, fit_and_test_lm_activevotus)) %>%
   unnest(model_results)
@@ -1559,7 +1559,7 @@ metrics_combined_Full_RNA = metrics %>%
   left_join(moisture_per_sample, by = c("base_sample_id" = "sample"))
 
 # Create Richness plot
-richness_plot <- ggplot(metrics_combined_Full_RNA, aes(x = richness, y = percent_water_content, colour = percent_water_content)) +
+richness_plot = ggplot(metrics_combined_Full_RNA, aes(x = richness, y = percent_water_content, colour = percent_water_content)) +
   geom_point(size = 8) +
   geom_smooth(method = "lm", se = F, linetype = "solid", inherit.aes = FALSE, aes(y = percent_water_content, x = richness)) +
   labs(
@@ -1584,14 +1584,14 @@ richness_plot
 # Prepare the dataset (assuming metrics_combined is already defined)
 
 # Function to fit and test a linear model for each method
-fit_and_test_lm <- function(data) {
-  lm_fit <- lm(percent_water_content ~ richness, data = data)
+fit_and_test_lm = function(data) {
+  lm_fit = lm(percent_water_content ~ richness, data = data)
   tidy(lm_fit) %>%
     filter(term == "richness")  # Extract the statistical result for the slope (richness)
 }
 
 # Split the dataset by method, fit linear models, and collect results
-lm_results_richness <- metrics_combined_Full_RNA %>%
+lm_results_richness = metrics_combined_Full_RNA %>%
   nest() %>%
   mutate(model_results = map(data, fit_and_test_lm)) %>%
   unnest(model_results)
@@ -1612,14 +1612,14 @@ shannon_plot
 #ggsave(shannon_plot, file="shannon_plots_consolidated_RNA.pdf", height = 8, width = 10)
 
 # Function to fit and test a linear model for each method
-fit_and_test_lm_shannons <- function(data) {
-  lm_fit <- lm(percent_water_content ~ shannons, data = data)
+fit_and_test_lm_shannons = function(data) {
+  lm_fit = lm(percent_water_content ~ shannons, data = data)
   tidy(lm_fit) %>%
     filter(term == "shannons")  # Extract the statistical result for the slope (richness)
 }
 
 # Split the dataset by method, fit linear models, and collect results
-lm_results_shannons <- metrics_combined_Full_RNA %>%
+lm_results_shannons = metrics_combined_Full_RNA %>%
   nest() %>%
   mutate(model_results = map(data, fit_and_test_lm_shannons)) %>%
   unnest(model_results)
@@ -1641,14 +1641,14 @@ pielous_plot
 #ggsave(pielous_plot, file="pielou_plots_consolidated_RNA.pdf", height = 8, width = 10)
        
 # Function to fit and test a linear model for each method
-fit_and_test_lm_pielous <- function(data) {
-  lm_fit <- lm(percent_water_content ~ pielous, data = data)
+fit_and_test_lm_pielous = function(data) {
+  lm_fit = lm(percent_water_content ~ pielous, data = data)
   tidy(lm_fit) %>%
     filter(term == "pielous")  # Extract the statistical result for the slope (richness)
 }
 
 # Split the dataset by method, fit linear models, and collect results
-lm_results_pielous <- metrics_combined_Full_RNA %>%
+lm_results_pielous = metrics_combined_Full_RNA %>%
   nest() %>%
   mutate(model_results = map(data, fit_and_test_lm_pielous)) %>%
   unnest(model_results)
@@ -1697,10 +1697,10 @@ Overall_jaccard_expression_proxy_long = rpk_metaT_rna_Overall %>%
   mutate(base_sample_id = sub("_(MG|MT).*", "", sample_id)) %>%
   left_join(moisture_per_sample, by = c("base_sample_id" = "sample"))
 
-x_limits <- range(Overall_jaccard_expression_proxy_long$percent_water_content, na.rm = TRUE)
-x_breaks <- pretty(x_limits, n = 6)
+x_limits = range(Overall_jaccard_expression_proxy_long$percent_water_content, na.rm = TRUE)
+x_breaks = pretty(x_limits, n = 6)
 
-OverallAbundRNA_plot <- ggplot(Overall_jaccard_expression_proxy_long, aes(x = percent_water_content, y = total_abundance)) +
+OverallAbundRNA_plot = ggplot(Overall_jaccard_expression_proxy_long, aes(x = percent_water_content, y = total_abundance)) +
   geom_point(aes(fill = percent_water_content), shape = 21, color = "black", stroke = 0.2, size = 7, alpha = 1) +
   geom_smooth(aes(color = percent_water_content), method = "lm", se = FALSE, size = 1.1) +
   scale_fill_viridis_c(option = "mako", name = "Moisture Content (%)", labels = scales::percent_format(accuracy = 1)) + scale_colour_viridis_c(option = "mako", name = "Moisture Content (%)") +
@@ -1715,14 +1715,14 @@ OverallAbundRNA_plot
 #ggsave(OverallAbundRNA_plot, file = "RNA_overall_abundproxy.pdf", height = 7, width = 7)
 
 # Function to fit and test a linear model for each method
-fit_and_test_lm_abundRNA <- function(data) {
-  lm_fit <- lm(percent_water_content ~ total_abundance, data = data)
+fit_and_test_lm_abundRNA = function(data) {
+  lm_fit = lm(percent_water_content ~ total_abundance, data = data)
   tidy(lm_fit) %>%
     filter(term == "total_abundance")  # Extract the statistical result for the slope (richness)
 }
 
 # Split the dataset by method, fit linear models, and collect results
-fit_and_test_lm_abundRNA_res <- Overall_jaccard_expression_proxy_long %>%
+fit_and_test_lm_abundRNA_res = Overall_jaccard_expression_proxy_long %>%
   nest() %>%
   mutate(model_results = map(data, fit_and_test_lm_abundRNA)) %>%
   unnest(model_results)
@@ -1740,7 +1740,7 @@ rna_num_abund_votus_persamps = rpk_metaT_rna_Overall %>%
   mutate(sample = sub("_(MG|MT).*", "", fullsample)) %>%
   left_join(select(moisture_per_sample, sample, percent_water_content), by = "sample")
 
-OverallActiveCountsRNA_plot <- ggplot(rna_num_abund_votus_persamps, aes(x = percent_water_content, y = Abund_vOTUs)) +
+OverallActiveCountsRNA_plot = ggplot(rna_num_abund_votus_persamps, aes(x = percent_water_content, y = Abund_vOTUs)) +
   geom_point(aes(fill = percent_water_content), shape = 21, color = "black", stroke = 0.2, size = 7, alpha = 1) +
   geom_smooth(aes(color = percent_water_content), method = "lm", se = FALSE, size = 1.1) +
   scale_fill_viridis_c(option = "mako", name = "Moisture Content (%)", labels = scales::percent_format(accuracy = 1)) + scale_colour_viridis_c(option = "mako", name = "Moisture Content (%)") +
@@ -1755,14 +1755,14 @@ OverallActiveCountsRNA_plot
 #ggsave(OverallActiveCountsRNA_plot, file="RNA_ActiveCounts_Through_Moisture.pdf", height = 7, width = 7)
 
 # Function to fit and test a linear model for each method
-fit_and_test_lm_countsRNA <- function(data) {
-  lm_fit <- lm(percent_water_content ~ Abund_vOTUs, data = data)
+fit_and_test_lm_countsRNA = function(data) {
+  lm_fit = lm(percent_water_content ~ Abund_vOTUs, data = data)
   tidy(lm_fit) %>%
     filter(term == "Abund_vOTUs")  # Extract the statistical result for the slope (richness)
 }
 
 # Split the dataset by method, fit linear models, and collect results
-fit_and_test_lm_countsRNA_res <- rna_num_abund_votus_persamps %>%
+fit_and_test_lm_countsRNA_res = rna_num_abund_votus_persamps %>%
   nest() %>%
   mutate(model_results = map(data, fit_and_test_lm_countsRNA)) %>%
   unnest(model_results)
@@ -1775,7 +1775,7 @@ variables_to_keep4 = c("moisture_per_sample", "metrics_combined", "metrics_combi
 rm(list=setdiff(ls(), variables_to_keep4)) #clean out the environment - keeping the metadata
 
 # Reshape the data to gather richness, shannons, and pielous into a single column
-metrics_combined_classed <- metrics_combined %>%
+metrics_combined_classed = metrics_combined %>%
   mutate(source = case_when(
     method %in% c("virome", "eukfloat", "bacterial", "total_dna") ~ "DNA",
     method %in% c("mt_virome", "mt_bulk", "mt_polya") ~ "RNA"
@@ -1796,13 +1796,13 @@ metrics_combined_Full_RNA_simple = metrics_combined_Full_RNA %>%
 
 metrics_combined_ALL = bind_rows(metrics_combined_classed, metrics_combined_Full_DNA_simple, metrics_combined_Full_RNA_simple)
 
-metrics_long <- metrics_combined_ALL %>%
+metrics_long = metrics_combined_ALL %>%
   pivot_longer(cols = c(richness, shannons, pielous), 
                names_to = "metric", 
                values_to = "value")
 
 # Z-scores per method × metric. go long
-metrics_z <- metrics_long %>%
+metrics_z = metrics_long %>%
   group_by(method, metric) %>%
   mutate(z = (value - mean(value, na.rm = TRUE)) / sd(value, na.rm = TRUE)) %>%
   ungroup() %>%
@@ -1815,7 +1815,7 @@ metrics_z <- metrics_long %>%
 source_colors = c("virome" = "#73c5f6", "eukfloat" = "#f0704a", "bacterial" = "#54bc00", "total_dna" = "#ff7bac", "mt_virome" = "#c5b4c5" , "mt_bulk" = "#fedd8d", "mt_polya" = "#8ba494", "full" = "gray70")
 
 # Final plot
-zscored_diversity <- ggplot(metrics_z, 
+zscored_diversity = ggplot(metrics_z, 
                             aes(x = percent_water_content, y = z)) +
   geom_hline(yintercept = 0, color = "gray70", size = 0.5) +
   geom_point(aes(fill = method), 
@@ -1856,8 +1856,8 @@ rm(list=setdiff(ls(), variables_to_keep4)) #clean out the environment - keeping 
 #Bunch of datasests in here now so lets set up a function to do the normalization.
 
 # Define a function for normalization
-normalize_expression <- function(counts_df) {
-  normalized_counts <- counts_df %>%
+normalize_expression = function(counts_df) {
+  normalized_counts = counts_df %>%
     filter(rowSums(select(., 7:19)) != 0) %>% #Remove rows where the sum of values in columns 7 to 19 is zero
     mutate(across(7:19, ~ ifelse(. < 5, 0, .))) %>% #Replace counts less than 5 with zero
     filter(rowSums(select(., 7:19)) != 0) %>% #Filter out completely zero rows again
@@ -1865,10 +1865,10 @@ normalize_expression <- function(counts_df) {
     column_to_rownames("Geneid")
   
   # Calculate RPK
-  rpk_df <- (normalized_counts[, 2:14] * 10^3) / normalized_counts[, 1] # Scale by kilobase pairs
+  rpk_df = (normalized_counts[, 2:14] * 10^3) / normalized_counts[, 1] # Scale by kilobase pairs
   
   # Transform and summarize data in long format
-  rpk_df_long <- rpk_df %>%
+  rpk_df_long = rpk_df %>%
     rownames_to_column(var = "votu_id") %>%
     pivot_longer(cols = -votu_id, names_to = "sample_id", values_to = "expression") %>% #long
     group_by(sample_id) %>%  #aggb per sample
@@ -1880,7 +1880,7 @@ normalize_expression <- function(counts_df) {
 }
 
 # read in all datasets
-datasets <- list(
+datasets = list(
   TotDNA_exp = read.delim("/read_mapping_results/ecology_analyses/reads_from_metaT_to_vir_from_frac/featureCounts_output_CDS_reverse-stranded_paired_TotDNA.txt", sep = "\t", header = T),
   VirDNA_exp = read.delim("/read_mapping_results/ecology_analyses/reads_from_metaT_to_vir_from_frac/featureCounts_output_CDS_reverse-stranded_paired_VirDNA.txt", sep = "\t", header = T),
   EukDNA_exp = read.delim("/read_mapping_results/ecology_analyses/reads_from_metaT_to_vir_from_frac/featureCounts_output_CDS_reverse-stranded_paired_Euk.txt", sep = "\t", header = T),
@@ -1888,13 +1888,13 @@ datasets <- list(
 )
 
 # Apply normalization function to each dataset
-normalized_results <- lapply(datasets, normalize_expression)
+normalized_results = lapply(datasets, normalize_expression)
 
 # write these out. Going to treat these indedepently now just so i can handle a bit more.
-TotDNA_rpk_norm <- normalized_results[['TotDNA_exp']]
-VirDNA_rpk_norm <- normalized_results[['VirDNA_exp']]
-EukDNA_rpk_norm <- normalized_results[['EukDNA_exp']]
-BarDNA_rpk_norm <- normalized_results[['BarDNA_exp']]
+TotDNA_rpk_norm = normalized_results[['TotDNA_exp']]
+VirDNA_rpk_norm = normalized_results[['VirDNA_exp']]
+EukDNA_rpk_norm = normalized_results[['EukDNA_exp']]
+BarDNA_rpk_norm = normalized_results[['BarDNA_exp']]
 
 #lets add in the method cols and ids so i can merge.
 TotDNA_rpk_norm$method = "TotDNA"
@@ -1911,14 +1911,14 @@ combined_DNA_expressions_long = combined_DNA_expressions %>%
   select(c(sample_id, total_expression, method, percent_water_content))
 
 # Z-scores per method × metric. go long
-metrics_z_allCombinedDNA <- combined_DNA_expressions_long %>%
+metrics_z_allCombinedDNA = combined_DNA_expressions_long %>%
   group_by(method) %>%
   mutate(z = (total_expression - mean(total_expression, na.rm = TRUE)) / sd(total_expression, na.rm = TRUE))
 
 source_colors = c("VirDNA" = "#73c5f6", "EukDNA" = "#f0704a", "BarDNA" = "#54bc00", "TotDNA" = "#ff7bac", "OverallDNA" = "gray")
 
 # Final plots
-zscored_ExpressionPerMethodDNA <- ggplot(metrics_z_allCombinedDNA, aes(x = percent_water_content, y = total_expression)) +
+zscored_ExpressionPerMethodDNA = ggplot(metrics_z_allCombinedDNA, aes(x = percent_water_content, y = total_expression)) +
   geom_hline(yintercept = 0, color = "gray70", size = 0.5) +
   geom_point(aes(fill = method), shape = 21, color = "black", stroke = 0.2, size = 3.4, alpha = 0.5) +
   geom_smooth(aes(color = method), method = "lm", se = FALSE, size = 1.1) +
@@ -1942,17 +1942,17 @@ zscored_ExpressionPerMethodDNA
 #ggsave(zscored_ExpressionPerMethodDNA, file = "non-zscored_Expression_v2.pdf", height = 6, width = 8)
 
 # Filter data for OverallDNA
-OverallDNA_data <- metrics_z_allCombinedDNA %>% 
+OverallDNA_data = metrics_z_allCombinedDNA %>% 
   filter(method == "OverallDNA")
 
 # Filter data for the other methods
-OtherMethods_data <- metrics_z_allCombinedDNA %>% 
+OtherMethods_data = metrics_z_allCombinedDNA %>% 
   filter(method %in% c("VirDNA", "EukDNA", "BarDNA", "TotDNA"))
 
-x_limits <- range(metrics_z_allCombinedDNA$percent_water_content, na.rm = TRUE)
-x_breaks <- pretty(x_limits, n = 6)
+x_limits = range(metrics_z_allCombinedDNA$percent_water_content, na.rm = TRUE)
+x_breaks = pretty(x_limits, n = 6)
 
-OverallDNA_plot <- ggplot(OverallDNA_data, aes(x = percent_water_content, y = total_expression)) +
+OverallDNA_plot = ggplot(OverallDNA_data, aes(x = percent_water_content, y = total_expression)) +
   geom_point(aes(fill = percent_water_content), shape = 21, color = "black", stroke = 0.2, size = 7, alpha = 1) +
   geom_smooth(aes(color = percent_water_content), method = "lm", se = FALSE, size = 1.1) +
   scale_fill_viridis_c(option = "mako", name = "Moisture Content (%)", labels = scales::percent_format(accuracy = 1)) + scale_colour_viridis_c(option = "mako", name = "Moisture Content (%)") +
@@ -1966,7 +1966,7 @@ OverallDNA_plot
 #ggsave(OverallDNA_plot, file = "overall_summed_expression.pdf", height = 7, width = 7)
 
 #Now lets do the others
-OtherMethods_plot <- ggplot(OtherMethods_data, aes(x = percent_water_content, y = total_expression)) +
+OtherMethods_plot = ggplot(OtherMethods_data, aes(x = percent_water_content, y = total_expression)) +
   geom_hline(yintercept = 0, color = "gray70", size = 0.5) +
   geom_point(aes(fill = method), shape = 21, color = "black", stroke = 0.2, size = 5, alpha = 1) +
   geom_smooth(aes(color = method), method = "lm", se = FALSE, size = 1.1) +
@@ -1984,14 +1984,14 @@ OtherMethods_plot
 #ggsave(OtherMethods_plot, file = "othermethods_summed_expression.pdf", height = 7, width = 7)
 
 # Let's do some stats on these now.
-fit_and_test_lm_expressDNA <- function(data) {
-  lm_fit <- lm(percent_water_content ~ total_expression, data = data)
+fit_and_test_lm_expressDNA = function(data) {
+  lm_fit = lm(percent_water_content ~ total_expression, data = data)
   tidy(lm_fit) %>%
     filter(term == "total_expression")  # Extract the statistical result for the slope (richness)
 }
 
 # Split the dataset by method, fit linear models, and collect results
-fit_and_test_lm_expressDNA_res <- OtherMethods_data %>%
+fit_and_test_lm_expressDNA_res = OtherMethods_data %>%
   nest() %>%
   mutate(model_results = map(data, fit_and_test_lm_expressDNA)) %>%
   unnest(model_results)
@@ -2002,16 +2002,16 @@ fit_and_test_lm_expressDNA_res <- OtherMethods_data %>%
 #
 
 # I also want to do that for the number of active viruses. not the overall sum. so let's mod the function a bit and rerun.
-count_active_votus <- function(counts_df, moisture_per_sample = NULL) {
+count_active_votus = function(counts_df, moisture_per_sample = NULL) {
   
-  active_counts <- counts_df %>%
+  active_counts = counts_df %>%
     filter(rowSums(select(., 7:19)) != 0) %>% #Remove rows that are zero across samples doingn this jsut so it runs faster sometimes a big deal
     mutate(across(7:19, ~ ifelse(. < 5, 0, .))) %>% #Set counts < 5 to zero
     filter(rowSums(select(., 7:19)) != 0) %>% #Remove rows that became all-zero after the threshold
     select(-Chr, -Start, -End, -Strand, -Length) %>% #remove bad cols i dont need
     column_to_rownames("Geneid")
   
-  active_per_sample <- active_counts %>%
+  active_per_sample = active_counts %>%
     summarise(across(everything(), ~ sum(. > 0))) %>% # count active vOTUs per sample ie anything greater than zero
     pivot_longer(cols = everything(),
                  names_to = "sample_id",
@@ -2019,7 +2019,7 @@ count_active_votus <- function(counts_df, moisture_per_sample = NULL) {
   
   # 6. Optional: add moisture info using the same base_sample_id logic you had
   if (!is.null(moisture_per_sample)) {
-    active_per_sample <- active_per_sample %>%
+    active_per_sample = active_per_sample %>%
       mutate(base_sample_id = sub("_(MG|MT).*", "", sample_id)) %>%
       left_join(moisture_per_sample, by = c("base_sample_id" = "sample"))
   }
@@ -2027,13 +2027,13 @@ count_active_votus <- function(counts_df, moisture_per_sample = NULL) {
   return(active_per_sample)
 }
 
-active_votu_results <- lapply(datasets, count_active_votus, moisture_per_sample = moisture_per_sample)
+active_votu_results = lapply(datasets, count_active_votus, moisture_per_sample = moisture_per_sample)
 
 # Extract each one cleanly
-TotDNA_active <- active_votu_results[['TotDNA_exp']]
-VirDNA_active <- active_votu_results[['VirDNA_exp']]
-EukDNA_active <- active_votu_results[['EukDNA_exp']]
-BarDNA_active <- active_votu_results[['BarDNA_exp']]
+TotDNA_active = active_votu_results[['TotDNA_exp']]
+VirDNA_active = active_votu_results[['VirDNA_exp']]
+EukDNA_active = active_votu_results[['EukDNA_exp']]
+BarDNA_active = active_votu_results[['BarDNA_exp']]
 
 #lets add in the method cols and ids so i can merge.
 TotDNA_active$method = "TotDNA"
@@ -2057,24 +2057,24 @@ expressed_otus_moisture_renamed = expressed_otus_moisture %>%
 combined_DNA_expressionCountsALL = rbind(combined_DNA_expressions_simple, expressed_otus_moisture_renamed)
 
 # Z-scores per method × metric. go long
-metrics_z_allCombbinedDNACounts <- combined_DNA_expressionCountsALL %>%
+metrics_z_allCombbinedDNACounts = combined_DNA_expressionCountsALL %>%
   group_by(method) %>%
   mutate(z = (n_active_votus - mean(n_active_votus, na.rm = TRUE)) / sd(n_active_votus, na.rm = TRUE))
 
 source_colors = c("VirDNA" = "#73c5f6", "EukDNA" = "#f0704a", "BarDNA" = "#54bc00", "TotDNA" = "#ff7bac", "OverallDNA" = "gray")
 
 # Filter data for OverallDNA
-OverallCombbinedDNACounts <- metrics_z_allCombbinedDNACounts %>% 
+OverallCombbinedDNACounts = metrics_z_allCombbinedDNACounts %>% 
   filter(method == "OverallDNA")
 
 # Filter data for the other methods
-OtherMethods_dataCounts <- metrics_z_allCombbinedDNACounts %>% 
+OtherMethods_dataCounts = metrics_z_allCombbinedDNACounts %>% 
   filter(method %in% c("VirDNA", "EukDNA", "BarDNA", "TotDNA"))
 
-x_limits <- range(metrics_z_allCombbinedDNACounts$percent_water_content, na.rm = TRUE)
-x_breaks <- pretty(x_limits, n = 6)
+x_limits = range(metrics_z_allCombbinedDNACounts$percent_water_content, na.rm = TRUE)
+x_breaks = pretty(x_limits, n = 6)
 
-OverallCountsDNA_plot <- ggplot(OverallCombbinedDNACounts, aes(x = percent_water_content, y = n_active_votus)) +
+OverallCountsDNA_plot = ggplot(OverallCombbinedDNACounts, aes(x = percent_water_content, y = n_active_votus)) +
   geom_point(aes(fill = percent_water_content), shape = 21, color = "black", stroke = 0.2, size = 7, alpha = 1) +
   geom_smooth(aes(color = percent_water_content), method = "lm", se = FALSE, size = 1.1) +
   scale_fill_viridis_c(option = "mako", name = "Moisture Content (%)", labels = scales::percent_format(accuracy = 1)) + scale_colour_viridis_c(option = "mako", name = "Moisture Content (%)") +
@@ -2088,7 +2088,7 @@ OverallCountsDNA_plot
 #ggsave(OverallCountsDNA_plot, file = "overall_Counts.pdf", height = 7, width = 7)
 
 #Now lets do the others
-OtherMethods_plot <- ggplot(OtherMethods_dataCounts, aes(x = percent_water_content, y = n_active_votus)) +
+OtherMethods_plot = ggplot(OtherMethods_dataCounts, aes(x = percent_water_content, y = n_active_votus)) +
   geom_hline(yintercept = 0, color = "gray70", size = 0.5) +
   geom_point(aes(fill = method), shape = 21, color = "black", stroke = 0.2, size = 5, alpha = 1) +
   geom_smooth(aes(color = method), method = "lm", se = FALSE, size = 1.1) +
@@ -2106,14 +2106,14 @@ OtherMethods_plot
 #ggsave(OtherMethods_plot, file = "othermethods_counts.pdf", height = 7, width = 7)
 
 # Let's do some stats on these now.
-fit_and_test_lm_CountsDNA <- function(data) {
-  lm_fit <- lm(percent_water_content ~ n_active_votus, data = data)
+fit_and_test_lm_CountsDNA = function(data) {
+  lm_fit = lm(percent_water_content ~ n_active_votus, data = data)
   tidy(lm_fit) %>%
     filter(term == "n_active_votus")  # Extract the statistical result for the slope (richness)
 }
 
 # Split the dataset by method, fit linear models, and collect results
-fit_and_test_lm_expressDNA_res <- OtherMethods_dataCounts %>%
+fit_and_test_lm_expressDNA_res = OtherMethods_dataCounts %>%
   nest() %>%
   mutate(model_results = map(data, fit_and_test_lm_CountsDNA)) %>%
   unnest(model_results)
@@ -2133,11 +2133,11 @@ PolyaRNA_vals = read.delim("/read_mapping_results/ecology_analyses/reads_from_me
 #
 
 #lets split up abundance and expression
-TotRNA_abundance <- TotRNA_vals %>% 
+TotRNA_abundance = TotRNA_vals %>% 
   select(-contains("_rnaseq_expression")) %>%
   select(-scaffold_id, -length)
 
-TotRNA_expression <- TotRNA_vals %>% 
+TotRNA_expression = TotRNA_vals %>% 
   select(contains("_rnaseq_expression"))
 
 #this one is for left merging
@@ -2177,10 +2177,10 @@ Tot_jaccard_expression_proxy_long = rpk_metaT_rna_Tot %>%
   mutate(base_sample_id = sub("_(MG|MT).*", "", sample_id)) %>%
   left_join(moisture_per_sample, by = c("base_sample_id" = "sample"))
 
-x_limits <- range(Tot_jaccard_expression_proxy_long$percent_water_content, na.rm = TRUE)
-x_breaks <- pretty(x_limits, n = 6)
+x_limits = range(Tot_jaccard_expression_proxy_long$percent_water_content, na.rm = TRUE)
+x_breaks = pretty(x_limits, n = 6)
 
-TotAbundRNA_plot <- ggplot(Tot_jaccard_expression_proxy_long, aes(x = percent_water_content, y = total_abundance)) +
+TotAbundRNA_plot = ggplot(Tot_jaccard_expression_proxy_long, aes(x = percent_water_content, y = total_abundance)) +
   geom_point(shape = 21, fill = "#fedd8d", color = "black", stroke = 0.2, size = 14, alpha = 1) +
   geom_smooth(color = "#fedd8d", method = "lm", se = FALSE, size = 1.1) +
   scale_x_continuous(labels = scales::percent_format(accuracy = 1), limits = x_limits, breaks = x_breaks) +
@@ -2194,14 +2194,14 @@ TotAbundRNA_plot
 #ggsave(TotAbundRNA_plot, file = "RNA_Tot_abundproxy.pdf", height = 7, width = 8)
 
 # Function to fit and test a linear model for each method
-fit_and_test_lm_abundRNA <- function(data) {
-  lm_fit <- lm(percent_water_content ~ total_abundance, data = data)
+fit_and_test_lm_abundRNA = function(data) {
+  lm_fit = lm(percent_water_content ~ total_abundance, data = data)
   tidy(lm_fit) %>%
     filter(term == "total_abundance")  # Extract the statistical result for the slope (richness)
 }
 
 # Split the dataset by method, fit linear models, and collect results
-fit_and_test_lm_abundRNA_res <- Tot_jaccard_expression_proxy_long %>%
+fit_and_test_lm_abundRNA_res = Tot_jaccard_expression_proxy_long %>%
   nest() %>%
   mutate(model_results = map(data, fit_and_test_lm_abundRNA)) %>%
   unnest(model_results)
@@ -2219,7 +2219,7 @@ rna_num_abund_votus_persamps_Tot = rpk_metaT_rna_Tot %>%
   mutate(sample = sub("_(MG|MT).*", "", fullsample)) %>%
   left_join(select(moisture_per_sample, sample, percent_water_content), by = "sample")
 
-TotActiveCountsRNA_plot <- ggplot(rna_num_abund_votus_persamps_Tot, aes(x = percent_water_content, y = expressed_votus)) +
+TotActiveCountsRNA_plot = ggplot(rna_num_abund_votus_persamps_Tot, aes(x = percent_water_content, y = expressed_votus)) +
   geom_point(shape = 21, fill = "#fedd8d", color = "black", stroke = 0.2, size = 14, alpha = 1) +
   geom_smooth(color = "#fedd8d", method = "lm", se = FALSE, size = 1.1) +
   scale_x_continuous(labels = scales::percent_format(accuracy = 1), limits = x_limits, breaks = x_breaks) +
@@ -2233,14 +2233,14 @@ TotActiveCountsRNA_plot
 #ggsave(TotActiveCountsRNA_plot, file="RNA_ActiveCounts_Through_Moisture_Tot.pdf", height = 7, width = 8)
 
 # Function to fit and test a linear model for each method
-fit_and_test_lm_countsRNA <- function(data) {
-  lm_fit <- lm(percent_water_content ~ expressed_votus, data = data)
+fit_and_test_lm_countsRNA = function(data) {
+  lm_fit = lm(percent_water_content ~ expressed_votus, data = data)
   tidy(lm_fit) %>%
     filter(term == "expressed_votus")  # Extract the statistical result for the slope (richness)
 }
 
 # Split the dataset by method, fit linear models, and collect results
-fit_and_test_lm_countsRNA_res_Tot <- rna_num_abund_votus_persamps_Tot %>%
+fit_and_test_lm_countsRNA_res_Tot = rna_num_abund_votus_persamps_Tot %>%
   nest() %>%
   mutate(model_results = map(data, fit_and_test_lm_countsRNA)) %>%
   unnest(model_results)
@@ -2253,11 +2253,11 @@ fit_and_test_lm_countsRNA_res_Tot <- rna_num_abund_votus_persamps_Tot %>%
 #
 
 #lets split up abundance and expression
-VirRNA_abundance <- VirRNA_vals %>% 
+VirRNA_abundance = VirRNA_vals %>% 
   select(-contains("_rnaseq_expression")) %>%
   select(-scaffold_id, -length)
 
-VirRNA_expression <- VirRNA_vals %>% 
+VirRNA_expression = VirRNA_vals %>% 
   select(contains("_rnaseq_expression"))
 
 #this one is for left merging
@@ -2298,10 +2298,10 @@ Vir_jaccard_expression_proxy_long = rpk_metaT_rna_Vir %>%
   mutate(base_sample_id = sub("_(MG|MT).*", "", sample_id)) %>%
   left_join(moisture_per_sample, by = c("base_sample_id" = "sample"))
 
-x_limits <- range(Vir_jaccard_expression_proxy_long$percent_water_content, na.rm = TRUE)
-x_breaks <- pretty(x_limits, n = 6)
+x_limits = range(Vir_jaccard_expression_proxy_long$percent_water_content, na.rm = TRUE)
+x_breaks = pretty(x_limits, n = 6)
 
-VirAbundRNA_plot <- ggplot(Vir_jaccard_expression_proxy_long, aes(x = percent_water_content, y = Viral_abundance)) +
+VirAbundRNA_plot = ggplot(Vir_jaccard_expression_proxy_long, aes(x = percent_water_content, y = Viral_abundance)) +
   geom_point(shape = 21, fill = "#c5b4c5", color = "black", stroke = 0.2, size = 14, alpha = 1) +
   geom_smooth(color = "#c5b4c5", method = "lm", se = FALSE, size = 1.1) +
   scale_x_continuous(labels = scales::percent_format(accuracy = 1), limits = x_limits, breaks = x_breaks) +
@@ -2315,14 +2315,14 @@ VirAbundRNA_plot
 #ggsave(VirAbundRNA_plot, file = "RNA_Vir_abundproxy.pdf", height = 7, width = 8)
 
 # Function to fit and test a linear model for each method
-fit_and_test_lm_abundRNA <- function(data) {
-  lm_fit <- lm(percent_water_content ~ Viral_abundance, data = data)
+fit_and_test_lm_abundRNA = function(data) {
+  lm_fit = lm(percent_water_content ~ Viral_abundance, data = data)
   tidy(lm_fit) %>%
     filter(term == "Viral_abundance")  # Extract the statistical result for the slope (richness)
 }
 
 # Split the dataset by method, fit linear models, and collect results
-fit_and_test_lm_abundRNA_res <- Vir_jaccard_expression_proxy_long %>%
+fit_and_test_lm_abundRNA_res = Vir_jaccard_expression_proxy_long %>%
   nest() %>%
   mutate(model_results = map(data, fit_and_test_lm_abundRNA)) %>%
   unnest(model_results)
@@ -2340,7 +2340,7 @@ rna_num_abund_votus_persamps_Vir = rpk_metaT_rna_Vir %>%
   mutate(sample = sub("_(MG|MT).*", "", fullsample)) %>%
   left_join(select(moisture_per_sample, sample, percent_water_content), by = "sample")
 
-VirActiveCountsRNA_plot <- ggplot(rna_num_abund_votus_persamps_Vir, aes(x = percent_water_content, y = expressed_votus)) +
+VirActiveCountsRNA_plot = ggplot(rna_num_abund_votus_persamps_Vir, aes(x = percent_water_content, y = expressed_votus)) +
   geom_point(shape = 21, fill = "#c5b4c5", color = "black", stroke = 0.2, size = 14, alpha = 1) +
   geom_smooth(color = "#c5b4c5", method = "lm", se = FALSE, size = 1.1) +
   scale_x_continuous(labels = scales::percent_format(accuracy = 1), limits = x_limits, breaks = x_breaks) +
@@ -2354,14 +2354,14 @@ VirActiveCountsRNA_plot
 #ggsave(VirActiveCountsRNA_plot, file="RNA_ActiveCounts_Through_Moisture_Vir.pdf", height = 7, width = 8)
 
 # Function to fit and test a linear model for each method
-fit_and_test_lm_countsRNA <- function(data) {
-  lm_fit <- lm(percent_water_content ~ expressed_votus, data = data)
+fit_and_test_lm_countsRNA = function(data) {
+  lm_fit = lm(percent_water_content ~ expressed_votus, data = data)
   tidy(lm_fit) %>%
     filter(term == "expressed_votus")  # Extract the statistical result for the slope (richness)
 }
 
 # Split the dataset by method, fit linear models, and collect results
-fit_and_test_lm_countsRNA_res_Vir <- rna_num_abund_votus_persamps_Vir %>%
+fit_and_test_lm_countsRNA_res_Vir = rna_num_abund_votus_persamps_Vir %>%
   nest() %>%
   mutate(model_results = map(data, fit_and_test_lm_countsRNA)) %>%
   unnest(model_results)
@@ -2373,11 +2373,11 @@ fit_and_test_lm_countsRNA_res_Vir <- rna_num_abund_votus_persamps_Vir %>%
 #
 
 #lets split up abundance and expression
-PolyaRNA_abundance <- PolyaRNA_vals %>% 
+PolyaRNA_abundance = PolyaRNA_vals %>% 
   select(-contains("_rnaseq_expression")) %>%
   select(-scaffold_id, -length)
 
-PolyaRNA_expression <- PolyaRNA_vals %>% 
+PolyaRNA_expression = PolyaRNA_vals %>% 
   select(contains("_rnaseq_expression"))
 
 #this one is for left merging
@@ -2418,10 +2418,10 @@ Polya_jaccard_expression_proxy_long = rpk_metaT_rna_Polya %>%
   mutate(base_sample_id = sub("_(MG|MT).*", "", sample_id)) %>%
   left_join(moisture_per_sample, by = c("base_sample_id" = "sample"))
 
-x_limits <- range(Polya_jaccard_expression_proxy_long$percent_water_content, na.rm = TRUE)
-x_breaks <- pretty(x_limits, n = 6)
+x_limits = range(Polya_jaccard_expression_proxy_long$percent_water_content, na.rm = TRUE)
+x_breaks = pretty(x_limits, n = 6)
 
-PolyaAbundRNA_plot <- ggplot(Polya_jaccard_expression_proxy_long, aes(x = percent_water_content, y = Polyaal_abundance)) +
+PolyaAbundRNA_plot = ggplot(Polya_jaccard_expression_proxy_long, aes(x = percent_water_content, y = Polyaal_abundance)) +
   geom_point(shape = 21, fill = "#8ba494", color = "black", stroke = 0.2, size = 14, alpha = 1) +
   geom_smooth(color = "#8ba494", method = "lm", se = FALSE, size = 1.1) +
   scale_x_continuous(labels = scales::percent_format(accuracy = 1), limits = x_limits, breaks = x_breaks) +
@@ -2435,14 +2435,14 @@ PolyaAbundRNA_plot
 #ggsave(PolyaAbundRNA_plot, file = "RNA_Polya_abundproxy.pdf", height = 7, width = 8)
 
 # Function to fit and test a linear model for each method
-fit_and_test_lm_abundRNA <- function(data) {
-  lm_fit <- lm(percent_water_content ~ Polyaal_abundance, data = data)
+fit_and_test_lm_abundRNA = function(data) {
+  lm_fit = lm(percent_water_content ~ Polyaal_abundance, data = data)
   tidy(lm_fit) %>%
     filter(term == "Polyaal_abundance")  # Extract the statistical result for the slope (richness)
 }
 
 # Split the dataset by method, fit linear models, and collect results
-fit_and_test_lm_abundRNA_res <- Polya_jaccard_expression_proxy_long %>%
+fit_and_test_lm_abundRNA_res = Polya_jaccard_expression_proxy_long %>%
   nest() %>%
   mutate(model_results = map(data, fit_and_test_lm_abundRNA)) %>%
   unnest(model_results)
@@ -2460,7 +2460,7 @@ rna_num_abund_votus_persamps_Polya = rpk_metaT_rna_Polya %>%
   mutate(sample = sub("_(MG|MT).*", "", fullsample)) %>%
   left_join(select(moisture_per_sample, sample, percent_water_content), by = "sample")
 
-PolyaActiveCountsRNA_plot <- ggplot(rna_num_abund_votus_persamps_Polya, aes(x = percent_water_content, y = expressed_votus)) +
+PolyaActiveCountsRNA_plot = ggplot(rna_num_abund_votus_persamps_Polya, aes(x = percent_water_content, y = expressed_votus)) +
   geom_point(shape = 21, fill = "#8ba494", color = "black", stroke = 0.2, size = 14, alpha = 1) +
   geom_smooth(color = "#8ba494", method = "lm", se = FALSE, size = 1.1) +
   scale_x_continuous(labels = scales::percent_format(accuracy = 1), limits = x_limits, breaks = x_breaks) +
@@ -2474,14 +2474,14 @@ PolyaActiveCountsRNA_plot
 #ggsave(PolyaActiveCountsRNA_plot, file="RNA_ActiveCounts_Through_Moisture_Polya.pdf", height = 7, width = 8)
 
 # Function to fit and test a linear model for each method
-fit_and_test_lm_countsRNA <- function(data) {
-  lm_fit <- lm(percent_water_content ~ expressed_votus, data = data)
+fit_and_test_lm_countsRNA = function(data) {
+  lm_fit = lm(percent_water_content ~ expressed_votus, data = data)
   tidy(lm_fit) %>%
     filter(term == "expressed_votus")  # Extract the statistical result for the slope (richness)
 }
 
 # Split the dataset by method, fit linear models, and collect results
-fit_and_test_lm_countsRNA_res_Polya <- rna_num_abund_votus_persamps_Polya %>%
+fit_and_test_lm_countsRNA_res_Polya = rna_num_abund_votus_persamps_Polya %>%
   nest() %>%
   mutate(model_results = map(data, fit_and_test_lm_countsRNA)) %>%
   unnest(model_results)
