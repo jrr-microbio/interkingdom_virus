@@ -58,7 +58,7 @@ library(scales)
 #Before going into richness and others, going to just really quickly plot out the read mapping statistics that i have.
 
 # Read in the data
-mapping_stats = read.delim("/methods_comparisons/read_mapping_statistics.csv", header = TRUE, sep=",")
+mapping_stats = read.delim("read_mapping_statistics.csv", header = TRUE, sep=",")
 
 # Reorder the factor levels
 mapping_stats$Type = factor(mapping_stats$Type, levels = c("Vir_DNA", "Euk_DNA", "BAr_DNA", "Tot_DNA", "Vir_RNA", "Tot_RNA", "PolyA_RNA"))
@@ -102,19 +102,20 @@ mappingstats_plots = grid.arrange(boxplot_readsused, boxplot_mapping, boxplot_no
 #ggsave(mappingstats_plots, file="FigureX_MappingStats.pdf", height=6, width=14)
 
 #For the richness, i made up some python code to take in the clusters output from the checkV and make a proper OTU-like table. I'm going to read that output OTU table now. This is better than just mapping either metaT or metaG because we have true counts data for each vOTU and whether it was or wasn't present in a sample!
-mg_bacterial = read.delim("/data_stream_comparisons/viral_accumulation_curves/otu_table_filtered_reordered_DNA_bacteria_871.csv", header = T, sep=",", row.names = 1)
 
-mg_eukfloat = read.delim("/data_stream_comparisons/viral_accumulation_curves/otu_table_filtered_reordered_DNA_EukFloat_3757.csv", header = T, sep=",", row.names = 1)
+mg_bacterial = read.delim("otu_table_filtered_reordered_DNA_bacteria_871.csv", header = T, sep=",", row.names = 1)
 
-mg_virome = read.delim("/data_stream_comparisons/viral_accumulation_curves/otu_table_filtered_reordered_RNA_virome_3892.csv", header = T, sep=",", row.names = 1)
+mg_eukfloat = read.delim("otu_table_filtered_reordered_DNA_EukFloat_3757.csv", header = T, sep=",", row.names = 1)
 
-mg_total = read.delim("/data_stream_comparisons/viral_accumulation_curves/otu_table_filtered_reordered_DNA_total_1017.csv", header = T, sep=",", row.names = 1)
+mg_virome = read.delim("otu_table_filtered_reordered_RNA_virome_3892.csv", header = T, sep=",", row.names = 1)
 
-mt_bulk = read.delim("/data_stream_comparisons/viral_accumulation_curves/otu_table_filtered_reordered_RNA_bulkMetaT_4035.csv", header = T, sep=",", row.names = 1)
+mg_total = read.delim("otu_table_filtered_reordered_DNA_total_1017.csv", header = T, sep=",", row.names = 1)
 
-mt_virome = read.delim("/data_stream_comparisons/viral_accumulation_curves/otu_table_filtered_reordered_RNA_virome_3892.csv", header = T, sep=",", row.names = 1)
+mt_bulk = read.delim("otu_table_filtered_reordered_RNA_bulkMetaT_4035.csv", header = T, sep=",", row.names = 1)
 
-mt_polya = read.delim("/data_stream_comparisons/viral_accumulation_curves/otu_table_filtered_reordered_RNA_polyA_375.csv", header = T, sep=",", row.names = 1)
+mt_virome = read.delim("otu_table_filtered_reordered_RNA_virome_3892.csv", header = T, sep=",", row.names = 1)
+
+mt_polya = read.delim("otu_table_filtered_reordered_RNA_polyA_375.csv", header = T, sep=",", row.names = 1)
 
 #Now I want to make accum curves for each of these individually, and then plot all of them in the same plot as well.
 
@@ -199,7 +200,7 @@ text(max(accumcurve_mt_polya$sites), max(accumcurve_mt_polya$richness), labels =
 ```{r Upset plots and quality comparisons per data stream}
 #For this otu table, i re-clustered all vOTUs from the Single assemblies that went into the figures above.
 
-upset_otu_table = read.csv(file="/methods_comparisons/upset_plots/otu_table_filtered_reordered.csv", header=T, sep=',', row.names = 1)
+upset_otu_table = read.csv(file="upset_plots/otu_table_filtered_reordered.csv", header=T, sep=',', row.names = 1)
 
 #Ok so now I am really interested in trying to find the overlap of these vOTUs across the samples (i.e., how many are unique per data type / redundant). Going to just aggregate all of the vOTUs per sample-type first. Note again: This is not including the co-assembly unique vOTUs. Those i will just implement into the ecology portion of the paper.
 
@@ -346,7 +347,7 @@ upset(
 
 ##########################################################
 
-datastream_metadat = read.csv(file="/methods_comparisons/vOTUs_per_data_stream_stats.csv", header=T, sep=',')
+datastream_metadat = read.csv(file="vOTUs_per_data_stream_stats.csv", header=T, sep=',')
 
 quality_table = datastream_metadat %>%
   select(-c(2, 4:7, 11:17, 20))
@@ -405,7 +406,7 @@ combined_plot
 
 ##One last thing here. lets compare the vOTU lengths of the viruses that are shared across at least 2 preparation methods. 
 
-overlapping_vOTUs = read.csv("/methods_comparisons/shared_votu_overlap_lengths.csv", header=T)
+overlapping_vOTUs = read.csv("shared_votu_overlap_lengths.csv", header=T)
 
 # Transforming the data
 # Transform the data
@@ -426,7 +427,7 @@ long_format_overlaps = overlapping_vOTUs %>%
 #Did a bunch of merging outside of R because there were a few things that needed tweaking re: IDs. 
 
 # Read the updated CSV file
-long_format_overlaps_updated = read.delim("/methods_comparisons/long_format_overlaps_v2.txt", sep = "\t")
+long_format_overlaps_updated = read.delim("long_format_overlaps_v2.txt", sep = "\t")
 
 # Calculate the average lengths within each cluster and genome_type
 avg_lengths = long_format_overlaps_updated %>%
@@ -600,7 +601,7 @@ proportion_bars_quality
 
 #Per reviewer comments, it also makes sense for this data to look into what the different detection properties of each dataset are. in other words, mapping the reads from each method to the reference database of all the viruses. A lower / easier way to detect a vOTU. reading in the combined output file and then doing some boxplots with whiskers with them.
 
-mapping_detection = read.delim("/read_mapping_results/detection_analyses/filtered_coverM_counts_individual_samps_to_19769_ref.txt", sep = "\t", header = T, row.names = 1)
+mapping_detection = read.delim("filtered_coverM_counts_individual_samps_to_19769_ref.txt", sep = "\t", header = T, row.names = 1)
 
 #let's make this binary - i dont totally want to compare total abundances. at least not yet. (i did this already and it looked kinda meh. Virome -> fungal -> bacterial -> total)
 
@@ -646,7 +647,7 @@ ggplot(detection_summary, aes(x = Group, y = Total_Detected_vOTUs, fill = Group)
 
 #one more thing here. Lets remake these boxplots but where the detection is normalized for the overall sampling effort (i.e., how many reads each sample had).
 
-sampling_metadata = read.delim("/read_mapping_results/sampling_metadata_seqs.csv", sep = ",")
+sampling_metadata = read.delim("sampling_metadata_seqs.csv", sep = ",")
 
 detection_summary_Norm = detection_long %>%
   group_by(Sample_ID, Group) %>% # Group by Sample ID and Group
@@ -730,7 +731,7 @@ adonis2(formula = dm.vOTUs_dna_abund ~ data_stream, data = sampling_metadata_DNA
 
 #Now letsdo this for RNA
 
-mapping_detection_RNA = read.delim("/read_mapping_results/detection_analyses/RNA_vOTUs/RNA_vOTU_output_abundance_counts_combined.tsv", sep = "\t", header = T, row.names = 1)
+mapping_detection_RNA = read.delim("RNA_vOTUs/RNA_vOTU_output_abundance_counts_combined.tsv", sep = "\t", header = T, row.names = 1)
 
 mapping_detection_RNA = mapping_detection_RNA %>%
   select(-c(1:3)) #cleanup
@@ -776,7 +777,7 @@ ggplot(detection_summary, aes(x = Group, y = Total_Detected_vOTUs, fill = Group)
 
 #one more thing here. Lets remake these boxplots but where the detection is normalized for the overall sampling effort (i.e., how many reads each sample had).
 
-sampling_metadata = read.delim("/read_mapping_results/sampling_metadata_seqs.csv", sep = ",")
+sampling_metadata = read.delim("sampling_metadata_seqs.csv", sep = ",")
 
 detection_summary_Norm = detection_long %>%
   group_by(Sample_ID, Group) %>% # Group by Sample ID and Group
@@ -856,7 +857,7 @@ adonis2(formula = dm.vOTUs_rna_abund ~ data_stream, data = sampling_metadata_RNA
 variables_to_keep5 = c("datastream_metadat", "relabund_dna_abund_genome", "geTMM_dna_expression_genome", "relabund_rna_abundance_genome", "jaccard_rna_expression", "sample_metadata") #All these vOTUs are a subset of this larger one, so keeping it in so i can subset it more easily.
 rm(list=setdiff(ls(), variables_to_keep5)) #clean out the environment
 
-dnahosts = read.delim("/iPHoP/iphop_best_hits.csv", header = TRUE, sep=",")
+dnahosts = read.delim("iphop_best_hits.csv", header = TRUE, sep=",")
 
 #Group by 'Host phylum' and 'source' and count viruses
 grouped = dnahosts %>%
@@ -890,7 +891,7 @@ dna_hosts
 #ggsave(dna_hosts, file = "stacked_barchart_DNA.pdf")
 
 #Now lets do RNA
-rnahosts = read.delim("/iPHoP/rna_virus_hosts.csv", header = TRUE, sep=",")
+rnahosts = read.delim("rna_virus_hosts.csv", header = TRUE, sep=",")
 
 # Remove rows where keep_remove is "remove"
 filtered_df = rnahosts[rnahosts$keep_remove != "remove", ]
@@ -1013,22 +1014,22 @@ rna_host_predictions
 
 #Now i want to make the richness / counts of each vOTU across each dataset. Using the geaParser, i'm able to discriminate between reads mapped to coding / template strand and those mapping to non-coding / expressed strand of the RNA seq data. I now have full vOTU tables that represent "counts" of each vOTU per sample per data method. Reading these in.
 
-mg_bacterial_counts = read.delim("/methods_comparisons/abundance_mapping_per_method/bacterial_filtered_coverM_counts.txt", header = T, sep="\t", row.names = 1)
+mg_bacterial_counts = read.delim("bacterial_filtered_coverM_counts.txt", header = T, sep="\t", row.names = 1)
 
-mg_eukfloat_counts = read.delim("/methods_comparisons/abundance_mapping_per_method/fungal_filtered_coverM_counts.txt", header = T, sep="\t", row.names = 1)
+mg_eukfloat_counts = read.delim("fungal_filtered_coverM_counts.txt", header = T, sep="\t", row.names = 1)
 
-total_DNA_counts = read.delim("/methods_comparisons/abundance_mapping_per_method/total_filtered_coverM_counts.txt", header = T, sep="\t", row.names = 1)
+total_DNA_counts = read.delim("total_filtered_coverM_counts.txt", header = T, sep="\t", row.names = 1)
 
-mg_virome_counts = read.delim("/methods_comparisons/abundance_mapping_per_method/virome_filtered_coverM_counts.txt", header = T, sep="\t", row.names = 1)
+mg_virome_counts = read.delim("virome_filtered_coverM_counts.txt", header = T, sep="\t", row.names = 1)
 
 mg_virome_counts = mg_virome_counts %>%
   select(-c(SM1001_MG_virome_NZAGW_scaffold_mapping_98id_primary_sorted, SM1002_MG_virome_NZAGX_scaffold_mapping_98id_primary_sorted)) #these two samples are pretty bad outliers because they did not get much viruses. pulling them out.
 
-mt_bulk_counts = read.delim("/methods_comparisons/abundance_mapping_per_method/vOTU_output_abundance_counts_parsed_RNA_bulkMetaT_3862.tsv", header = T, sep="\t", row.names = 1)
+mt_bulk_counts = read.delim("vOTU_output_abundance_counts_parsed_RNA_bulkMetaT_3862.tsv", header = T, sep="\t", row.names = 1)
 
-mt_virome_counts = read.delim("/methods_comparisons/abundance_mapping_per_method/vOTU_output_abundance_counts_parsed_RNA_Virome_3787.tsv", header = T, sep="\t", row.names = 1)
+mt_virome_counts = read.delim("vOTU_output_abundance_counts_parsed_RNA_Virome_3787.tsv", header = T, sep="\t", row.names = 1)
 
-mt_polya_counts = read.delim("/methods_comparisons/abundance_mapping_per_method/vOTU_output_abundance_counts_parsed_RNA_PolyA_372.tsv", header = T, sep="\t", row.names = 1)
+mt_polya_counts = read.delim("vOTU_output_abundance_counts_parsed_RNA_PolyA_372.tsv", header = T, sep="\t", row.names = 1)
 
 # Define a function to calculate richness, diversity, and evenness
 calculate_metrics = function(otu_table, method_name) {
@@ -1063,7 +1064,7 @@ metrics_combined_individual_datasets = bind_rows(metrics_list)
 ##############
 
 # Bring in Moisture data
-moisture_per_sample = read.csv("/_Supplemental_Tables/split/site_metadata.csv", sep = ",", header = T)
+moisture_per_sample = read.csv("site_metadata.csv", sep = ",", header = T)
 
 # Add moisture data to metrics_combined
 metrics_combined = metrics_combined_individual_datasets %>%
@@ -1191,7 +1192,7 @@ rm(list=setdiff(ls(), variables_to_keep4)) #clean out the environment - keeping 
 #Now we're going to start working with the fully de-replicated database across all data methods. I mapped these three ways. 1. DNA vOTUs to bulk metaT (dna expression) 2. DNA vOTUs to dna virome (dna abundance) 3. RNA vOTUs to bulk metaT (rna abundance and expression). The latter file (3) i then used geaParser to determine if reads mapped to template strand (abundance) or non-template strand (expression). These are only ssRNA + or - viruses so these should be accurate. I did get a handful of clobbers that said certain vOTUs were expressed but not abundant - i removed those small fraction of vOTUs because i think those are more likely methodological detection issues that did not make the 1x depth and 75% coverage cutoff.
 
 #DNA abundance 
-counts_dna_abund = read.delim("/read_mapping_results/ecology_analyses/bulk_metaG_DNA_vOTU/TotalDNA_consolidatedDB_filtered_coverM_counts.txt", header = T, sep="\t") #coverM out
+counts_dna_abund = read.delim("TotalDNA_consolidatedDB_filtered_coverM_counts.txt", header = T, sep="\t") #coverM out
 
 #Processing dna abund coverM table. This already has 1x depth cutoff and 75% coverage cutoff implemented.
 relabund_dna_abund_genome = counts_dna_abund %>%
@@ -1400,7 +1401,7 @@ lm_results_pielous = metrics_combined_Full_DNA %>%
   unnest(model_results)
 
 #DNA expression
-counts_dna_expression = read.delim("/read_mapping_results/ecology_analyses/bulk_metaT_DNA_vOTU/featureCounts_output_CDS_reverse-stranded_paired.txt") #featureCounts out
+counts_dna_expression = read.delim("featureCounts_output_CDS_reverse-stranded_paired.txt") #featureCounts out
 
 counts_dna_expression_noZero =  counts_dna_expression %>% 
   filter(rowSums(select(., 7:19)) != 0) %>% #Remove rows where the sum of the values in columns 7 to 19 is zero - just to make the processing quicker.
@@ -1522,7 +1523,7 @@ fit_and_test_lm_activevotus_res = expressed_otus_moisture %>%
 #This is the same as my overall expression patterns. This is also opposite to ruonan's trends. interesting.
 
 #RNA abundance
-counts_rna_abundance = read.delim("/read_mapping_results/ecology_analyses/bulk_metaT_RNA_vOTU/5893_genes_abundance_vOTUs.csv", header = T, sep=",") #geaParse template strand
+counts_rna_abundance = read.delim("5893_genes_abundance_vOTUs.csv", header = T, sep=",") #geaParse template strand
 
 #Processing geaParse abund table - resolving at genome level. This already has 1x depth cutoff and 75% coverage cutoff implemented.
 relabund_rna_abundance_genome = counts_rna_abundance %>%
@@ -1654,7 +1655,7 @@ lm_results_pielous = metrics_combined_Full_RNA %>%
   unnest(model_results)
 
 #RNA expression
-counts_rna_expression = read.delim("/read_mapping_results/ecology_analyses/bulk_metaT_RNA_vOTU/5893_genes_expression_vOTUs.csv", header = T, sep=",") #geaParse non-template strand
+counts_rna_expression = read.delim("5893_genes_expression_vOTUs.csv", header = T, sep=",") #geaParse non-template strand
 
 jaccard_rna_expression = counts_rna_expression %>%
   select(-length, -gene_id) %>% #remove the noise
@@ -1684,7 +1685,7 @@ relabund_rna_abundance_genome_toMerge = relabund_rna_abundance_genome %>%
 #  left_join(relabund_rna_abundance_genome_toMerge, by="scaffold_id") %>%
 #  column_to_rownames(var="scaffold_id")
 
-Overall_jaccard_expression_proxy = read.csv("/read_mapping_results/ecology_analyses/reads_from_metaT_to_vir_from_frac/processed_RNA_vOTU_tabs/Updated_jaccard_proxy_nonrel_expression.csv", header = T, row.names = 1)
+Overall_jaccard_expression_proxy = read.csv("Updated_jaccard_proxy_nonrel_expression.csv", header = T, row.names = 1)
 
 #calculate RPK
 rpk_metaT_rna_Overall = ((Overall_jaccard_expression_proxy[,2:14]*10^3)/Overall_jaccard_expression_proxy[,1]) #note, we multiply by 10^3 here because geTMM expects kilobase pairs on lengths and featurecounts_dna_expression reports bps.
@@ -1881,10 +1882,10 @@ normalize_expression = function(counts_df) {
 
 # read in all datasets
 datasets = list(
-  TotDNA_exp = read.delim("/read_mapping_results/ecology_analyses/reads_from_metaT_to_vir_from_frac/featureCounts_output_CDS_reverse-stranded_paired_TotDNA.txt", sep = "\t", header = T),
-  VirDNA_exp = read.delim("/read_mapping_results/ecology_analyses/reads_from_metaT_to_vir_from_frac/featureCounts_output_CDS_reverse-stranded_paired_VirDNA.txt", sep = "\t", header = T),
-  EukDNA_exp = read.delim("/read_mapping_results/ecology_analyses/reads_from_metaT_to_vir_from_frac/featureCounts_output_CDS_reverse-stranded_paired_Euk.txt", sep = "\t", header = T),
-  BarDNA_exp = read.delim("/read_mapping_results/ecology_analyses/reads_from_metaT_to_vir_from_frac/featureCounts_output_CDS_reverse-stranded_paired_BAr.txt", sep = "\t", header = T)
+  TotDNA_exp = read.delim("featureCounts_output_CDS_reverse-stranded_paired_TotDNA.txt", sep = "\t", header = T),
+  VirDNA_exp = read.delim("featureCounts_output_CDS_reverse-stranded_paired_VirDNA.txt", sep = "\t", header = T),
+  EukDNA_exp = read.delim("featureCounts_output_CDS_reverse-stranded_paired_Euk.txt", sep = "\t", header = T),
+  BarDNA_exp = read.delim("featureCounts_output_CDS_reverse-stranded_paired_BAr.txt", sep = "\t", header = T)
 )
 
 # Apply normalization function to each dataset
@@ -2122,11 +2123,11 @@ fit_and_test_lm_expressDNA_res = OtherMethods_dataCounts %>%
 
 ################
 
-TotRNA_vals = read.delim("/read_mapping_results/ecology_analyses/reads_from_metaT_to_vir_from_frac/TotRNA_vOTU_output_abund_exp_parsed.tsv", sep = "\t", header = T, row.names = 1)
+TotRNA_vals = read.delim("TotRNA_vOTU_output_abund_exp_parsed.tsv", sep = "\t", header = T, row.names = 1)
 
-VirRNA_vals = read.delim("/read_mapping_results/ecology_analyses/reads_from_metaT_to_vir_from_frac/VirRNA_vOTU_output_abund_exp_parsed.tsv", sep = "\t", header = T, row.names = 1)
+VirRNA_vals = read.delim("VirRNA_vOTU_output_abund_exp_parsed.tsv", sep = "\t", header = T, row.names = 1)
 
-PolyaRNA_vals = read.delim("/read_mapping_results/ecology_analyses/reads_from_metaT_to_vir_from_frac/PolyA_vOTU_output_abund_exp_parsed.tsv", sep = "\t", header = T, row.names = 1)
+PolyaRNA_vals = read.delim("PolyA_vOTU_output_abund_exp_parsed.tsv", sep = "\t", header = T, row.names = 1)
 
 #
 #Start with TotRNA abundance
@@ -2165,7 +2166,7 @@ jaccard_rna_expression_Tot = TotRNA_expression %>%
 #write.csv(Nonrelabund_rna_abundance_genome_Tot, file = "Nonrelabund_rna_abundance_genome_Tot.csv")
 #write.csv(jaccard_rna_expression_Tot, file = "jaccard_rna_expression_Tot.csv")
 
-Nonrelabund_jaccard_proxy_Tot = read.csv("/read_mapping_results/ecology_analyses/reads_from_metaT_to_vir_from_frac/processed_RNA_vOTU_tabs/overall/Updated_jaccard_proxy_nonrel_expression_Tot.csv", header = T, row.names = 1)
+Nonrelabund_jaccard_proxy_Tot = read.csv("Updated_jaccard_proxy_nonrel_expression_Tot_RNA.csv", header = T, row.names = 1)
 
 rpk_metaT_rna_Tot = ((Nonrelabund_jaccard_proxy_Tot[,2:14]*10^3)/Nonrelabund_jaccard_proxy_Tot[,1]) #note, we multiply by 10^3 here because geTMM expects kilobase pairs on lengths and featurecounts_dna_expression reports bps.
 
@@ -2286,7 +2287,7 @@ jaccard_rna_expression_Vir = VirRNA_expression %>%
 
 #write.csv(jaccard_rna_expression_Vir, file = "jaccard_rna_expression_Vir.csv")
 
-Nonrelabund_jaccard_proxy_Vir = read.csv("/read_mapping_results/ecology_analyses/reads_from_metaT_to_vir_from_frac/processed_RNA_vOTU_tabs/Vir/Updated_jaccard_proxy_nonrel_expression_Vir.csv", header = T, row.names = 1)
+Nonrelabund_jaccard_proxy_Vir = read.csv("Updated_jaccard_proxy_nonrel_expression_Vir.csv", header = T, row.names = 1)
 
 rpk_metaT_rna_Vir = ((Nonrelabund_jaccard_proxy_Vir[,2:14]*10^3)/Nonrelabund_jaccard_proxy_Vir[,1]) #note, we multiply by 10^3 here because geTMM expects kilobase pairs on lengths and featurecounts_dna_expression reports bps.
 
@@ -2406,7 +2407,7 @@ jaccard_rna_expression_Polya = PolyaRNA_expression %>%
 
 #write.csv(jaccard_rna_expression_Polya, file = "jaccard_rna_expression_Polya.csv")
 
-Nonrelabund_jaccard_proxy_Polya = read.csv("/read_mapping_results/ecology_analyses/reads_from_metaT_to_vir_from_frac/processed_RNA_vOTU_tabs/PolyA/Updated_jaccard_proxy_nonrel_expression_Polya.csv", header = T, row.names = 1)
+Nonrelabund_jaccard_proxy_Polya = read.csv("Updated_jaccard_proxy_nonrel_expression_Polya.csv", header = T, row.names = 1)
 
 rpk_metaT_rna_Polya = ((Nonrelabund_jaccard_proxy_Polya[,2:14]*10^3)/Nonrelabund_jaccard_proxy_Polya[,1]) #note, we multiply by 10^3 here because geTMM expects kilobase pairs on lengths and featurecounts_dna_expression reports bps.
 
