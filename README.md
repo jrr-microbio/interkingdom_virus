@@ -13,7 +13,7 @@ Affiliation:
 ## Abstract: 
 Deciphering viral ecology in soils is challenging due to soil’s high physiochemical and community complexity. To enhance detection of communities of DNA and RNA viruses, we applied different preparation methods to soils collected across a moisture gradient from a grassland field experiment. Analyses included metagenomics and metatranscriptomics of size-fractionated extracellular viruses and total soil, total soil metatranscriptomics with polyadenylation enrichment, and metagenomics of bacteria/archaea as well as eukaryote-enriched samples. DNA viromes outperformed total soil metagenomes. Contrastingly, while RNA viromes and total soil metatranscriptomes performed similarly for viral recovery, though RNA viromes identified higher-quality genomes. Further, we demonstrate the power of different preparation methods in identifying distinct viral communities with unique host predictions, which can have significant implications for ecological investigations related to interkingdom interactions. Finally, we show that relationships between vOTU diversity and expression by moisture vary for both DNA and RNA vOTUs and method, urging caution regarding ecological interpretation.
 
-![Conceptual copy](https://github.com/user-attachments/assets/26a0fc40-7a36-418e-bc3b-0c5096905b17)
+<img width="1200" height="1200" alt="Figure_1_ExperimentalDesign" src="https://github.com/user-attachments/assets/24a36be3-594e-4eec-9842-499d48149905" />
 
 For questions: please email the corresponding author listed on original manuscript.
 
